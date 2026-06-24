@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Vacant Parcels Along the D Line Extension — Field Survey</title>
+<meta name="description" content="A field survey of vacant and underutilized parcels along the Los Angeles Metro D Line (Purple Line) extension corridor." />
+
+<!-- Leaflet (map library) -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<!-- Fonts: Space Grotesk (display), Public Sans (body, the US federal civic typeface), IBM Plex Mono (data) -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Public+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+<style>
+  :root {
+    --purple:       #7B3FA0;   /* D Line anchor */
+    --purple-light: #A45FC4;
+    --purple-tint:  #ECE2F4;
+    --signal:       #E0A11B;   /* amber — vacant/opportunity marker */
+    --ink:          #211B33;
+    --ink-soft:     #635C7A;
+    --paper:        #F3F1F8;
+    --surface:      #FFFFFF;
+    --rule:         #E0DAEC;
+    --maxw: 1080px;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Public Sans', system-ui, sans-serif;
+    font-size: 17px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
+
+  /* ---- shared type ---- */
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--purple);
+    margin: 0 0 12px;
+  }
+  h1, h2, h3 { font-family: 'Space Grotesk', sans-serif; font-weight: 700; line-height: 1.1; color: var(--ink); }
+  h2 { font-size: clamp(26px, 4vw, 38px); margin: 0 0 16px; letter-spacing: -0.01em; }
+  h3 { font-size: 20px; margin: 0 0 8px; }
+  p { margin: 0 0 16px; }
+  a { color: var(--purple); }
+
+  /* ---- header / hero ---- */
+  .hero { padding: 64px 0 40px; border-bottom: 1px solid var(--rule); }
+  .hero h1 {
+    font-size: clamp(34px, 6vw, 62px);
+    letter-spacing: -0.02em;
+    margin: 0 0 18px;
+    max-width: 16ch;
+  }
+  .hero .lede {
+    font-size: clamp(18px, 2.4vw, 22px);
+    color: var(--ink-soft);
+    max-width: 56ch;
+    margin: 0;
+  }
+
+  /* ---- the signature: the corridor rendered as a transit line ---- */
+  .corridor { margin: 44px 0 8px; overflow-x: auto; padding-bottom: 8px; }
+  .corridor svg { display: block; min-width: 720px; width: 100%; height: 132px; }
+  .corridor .track { fill: none; stroke: var(--purple); stroke-width: 5; stroke-linecap: round;
+    stroke-dasharray: 1200; stroke-dashoffset: 1200; animation: draw 1.6s ease forwards; }
+  .corridor .stop { fill: var(--surface); stroke: var(--purple); stroke-width: 4; }
+  .corridor .stop.ext { fill: var(--purple); }
+  .corridor .stoplabel { font-family: 'IBM Plex Mono', monospace; font-size: 10px; fill: var(--ink-soft); }
+  .corridor .stoplabel.ext { fill: var(--purple); font-weight: 500; }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+
+  .corridor-key { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--ink-soft); display: flex; gap: 24px; flex-wrap: wrap; margin-top: 4px; }
+  .corridor-key span { display: inline-flex; align-items: center; gap: 8px; }
+  .dot { width: 11px; height: 11px; border-radius: 50%; border: 3px solid var(--purple); background: var(--surface); }
+  .dot.ext { background: var(--purple); }
+
+  /* ---- data readout strip ---- */
+  .readout { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--rule);
+    border: 1px solid var(--rule); border-radius: 12px; overflow: hidden; margin: 44px 0; }
+  .readout .cell { background: var(--surface); padding: 22px 20px; }
+  .readout .num { font-family: 'IBM Plex Mono', monospace; font-size: 30px; font-weight: 500; color: var(--ink); }
+  .readout .lbl { font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); margin-top: 6px; }
+
+  /* ---- sections ---- */
+  section { padding: 56px 0; border-bottom: 1px solid var(--rule); }
+  .section-head { max-width: 60ch; margin-bottom: 28px; }
+  .section-head p { color: var(--ink-soft); margin: 0; }
+
+  /* ---- map ---- */
+  #map { height: 520px; border-radius: 14px; border: 1px solid var(--rule); }
+  .leaflet-popup-content { font-family: 'Public Sans', sans-serif; }
+  .pop-addr { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 15px; color: var(--ink); }
+  .pop-row { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--ink-soft); margin-top: 4px; }
+  .pop-status { display: inline-block; margin-top: 8px; padding: 2px 9px; border-radius: 999px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px; background: var(--purple-tint); color: var(--purple); }
+
+  /* ---- table ---- */
+  .table-scroll { overflow-x: auto; border: 1px solid var(--rule); border-radius: 14px; background: var(--surface); }
+  table { width: 100%; border-collapse: collapse; min-width: 720px; }
+  thead th {
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink-soft); text-align: left; padding: 14px 16px; border-bottom: 1px solid var(--rule);
+    cursor: pointer; user-select: none; white-space: nowrap; background: var(--surface); position: sticky; top: 0;
+  }
+  thead th:hover { color: var(--purple); }
+  thead th[aria-sort="ascending"]::after { content: " ↑"; color: var(--purple); }
+  thead th[aria-sort="descending"]::after { content: " ↓"; color: var(--purple); }
+  tbody td { padding: 13px 16px; border-bottom: 1px solid var(--rule); font-size: 15px; vertical-align: top; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: var(--purple-tint); }
+  td.mono { font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: var(--ink-soft); white-space: nowrap; }
+  .tag { display: inline-block; padding: 2px 9px; border-radius: 999px; font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; background: var(--purple-tint); color: var(--purple); white-space: nowrap; }
+
+  /* ---- methodology ---- */
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+  .card { background: var(--surface); border: 1px solid var(--rule); border-radius: 14px; padding: 26px; }
+  .card p { color: var(--ink-soft); margin: 0; }
+  .step { font-family: 'IBM Plex Mono', monospace; color: var(--purple); font-size: 13px; margin-bottom: 10px; }
+
+  /* ---- footer ---- */
+  footer { padding: 48px 0 72px; }
+  .foot-links { display: flex; gap: 28px; flex-wrap: wrap; font-family: 'IBM Plex Mono', monospace; font-size: 13px; }
+  .foot-note { color: var(--ink-soft); font-size: 13px; margin-top: 20px; max-width: 60ch; }
+
+  /* ---- focus / accessibility ---- */
+  a:focus-visible, th:focus-visible { outline: 3px solid var(--signal); outline-offset: 2px; }
+
+  @media (max-width: 720px) {
+    .readout { grid-template-columns: 1fr 1fr; }
+    .grid2 { grid-template-columns: 1fr; }
+    #map { height: 420px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .corridor .track { animation: none; stroke-dashoffset: 0; }
+    html { scroll-behavior: auto; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">Field Survey &middot; Los Angeles</p>
+    <h1>Vacant parcels along the D&nbsp;Line extension.</h1>
+    <p class="lede">A walking survey of vacant and underutilized land within the Wilshire corridor, mapped parcel by parcel as the subway pushes west.</p>
+
+    <!-- SIGNATURE: the corridor itself, drawn as a transit line. Filled dots = new extension stations. -->
+    <div class="corridor" aria-hidden="true">
+      <svg viewBox="0 0 960 132" preserveAspectRatio="xMinYMid meet" role="img">
+        <line class="track" x1="40" y1="56" x2="920" y2="56" />
+        <!-- stations: x, label, ext? -->
+        <g class="stops"></g>
+      </svg>
+    </div>
+    <div class="corridor-key">
+      <span><i class="dot"></i> Existing station</span>
+      <span><i class="dot ext"></i> Extension station</span>
+    </div>
+
+    <!-- DATA READOUT — pulled live from your parcel data below -->
+    <div class="readout" id="readout"></div>
+  </div>
+</header>
+
+<section id="map-section">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">01 / The map</p>
+      <h2>Every surveyed parcel, on the line</h2>
+      <p>Amber markers are surveyed parcels; purple markers are corridor stations for reference. Click any parcel for its record.</p>
+    </div>
+    <div id="map"></div>
+  </div>
+</section>
+
+<section id="table-section">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">02 / The data</p>
+      <h2>The survey, as a table</h2>
+      <p>Click any column heading to sort. This is the same dataset that draws the map &mdash; one source, two views.</p>
+    </div>
+    <div class="table-scroll">
+      <table id="parcel-table">
+        <thead>
+          <tr>
+            <th data-key="address" data-type="str">Address / location</th>
+            <th data-key="apn" data-type="str">APN</th>
+            <th data-key="size_sqft" data-type="num">Lot size (sq ft)</th>
+            <th data-key="zoning" data-type="str">Zoning</th>
+            <th data-key="status" data-type="str">Status</th>
+            <th data-key="notes" data-type="str">Notes</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="method-section">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">03 / How it was done</p>
+      <h2>Methodology</h2>
+      <p>A transparent record of how each parcel entered the dataset, so the numbers can be trusted and reproduced.</p>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <div class="step">Field</div>
+        <h3>Walked the corridor</h3>
+        <p>Each block within the survey boundary was visited on foot, with vacant lots, vacant buildings, surface parking, and visibly underused parcels logged by address and coordinates. <em>Edit this with your real method.</em></p>
+      </div>
+      <div class="card">
+        <div class="step">Records</div>
+        <h3>Cross-checked the data</h3>
+        <p>Field observations were matched against county assessor parcel numbers (APNs) and zoning so each entry is verifiable. <em>Edit this with your real sources.</em></p>
+      </div>
+      <div class="card">
+        <div class="step">Boundary</div>
+        <h3>Defined the study area</h3>
+        <p>The survey covers parcels within a set walking distance of D Line extension stations. <em>State your exact boundary and date range here.</em></p>
+      </div>
+      <div class="card">
+        <div class="step">Limits</div>
+        <h3>What this is and isn't</h3>
+        <p>A point-in-time field survey, not a legal or appraisal record. Status reflects observation on the survey date. <em>Adjust as needed.</em></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p class="eyebrow">Project</p>
+    <h2 style="margin-bottom:18px;">D Line Vacant Parcel Survey</h2>
+    <div class="foot-links">
+      <a href="#" id="link-arcgis">Interactive ArcGIS version &rarr;</a>
+      <a href="#" id="link-repo">Source &amp; data on GitHub &rarr;</a>
+      <a href="#map-section">Back to map &uarr;</a>
+    </div>
+    <p class="foot-note">Sample data shown for demonstration. Replace the <code>PARCELS</code> and <code>STATIONS</code> arrays in this page's source, and the <code>parcels.csv</code> file, with your survey results. D Line / Purple Line is operated by LA Metro; verify station names and the survey boundary before publishing.</p>
+  </div>
+</footer>
+
+<script>
+/* =========================================================================
+   EDIT YOUR DATA HERE
+   -------------------------------------------------------------------------
+   1) PARCELS  -> drives BOTH the map and the table. One source of truth.
+   2) STATIONS -> the purple corridor line + the reference dots on the map.
+   Replace the sample rows below with your survey results. Keep the field
+   names (address, apn, lat, lng, size_sqft, zoning, status, notes).
+   ========================================================================= */
+
+const PARCELS = [
+  { address: "3520 Wilshire Blvd",      apn: "5503-001-014", lat: 34.0617, lng: -118.3090, size_sqft: 12500, zoning: "C2",      status: "Surface parking",   notes: "Half-block from Wilshire/Western station." },
+  { address: "672 S Normandie Ave",     apn: "5503-012-008", lat: 34.0585, lng: -118.3003, size_sqft: 6800,  zoning: "R4",      status: "Vacant lot",        notes: "Fenced, weeds; no recent permits." },
+  { address: "4101 Wilshire Blvd",      apn: "5093-004-021", lat: 34.0621, lng: -118.3185, size_sqft: 21000, zoning: "[Q]C2",   status: "Vacant building",   notes: "Former bank branch, boarded." },
+  { address: "5150 Wilshire Blvd",      apn: "5503-020-003", lat: 34.0623, lng: -118.3438, size_sqft: 9400,  zoning: "C2",      status: "Underutilized",     notes: "Single-story retail on deep lot near Wilshire/La Brea." },
+  { address: "5760 Wilshire Blvd",      apn: "5512-018-006", lat: 34.0625, lng: -118.3610, size_sqft: 15200, zoning: "C2",      status: "Surface parking",   notes: "Adjacent to Wilshire/Fairfax extension station." },
+  { address: "6300 Wilshire Blvd",      apn: "5512-031-011", lat: 34.0632, lng: -118.3762, size_sqft: 18800, zoning: "C2",      status: "Vacant lot",        notes: "Cleared parcel near Wilshire/La Cienega." },
+  { address: "3450 W 8th St",           apn: "5504-009-017", lat: 34.0570, lng: -118.3030, size_sqft: 5600,  zoning: "R3",      status: "Vacant building",   notes: "Small apartment, vacant; tax-default flag." },
+  { address: "3030 Wilshire Blvd",      apn: "5077-014-005", lat: 34.0619, lng: -118.2980, size_sqft: 11200, zoning: "C2",      status: "Underutilized",     notes: "Auto-use on transit-adjacent lot near Wilshire/Vermont." }
+];
+
+const STATIONS = [
+  { name: "Wilshire/Vermont",       lat: 34.0623, lng: -118.2913, ext: false },
+  { name: "Wilshire/Normandie",     lat: 34.0617, lng: -118.3003, ext: false },
+  { name: "Wilshire/Western",       lat: 34.0617, lng: -118.3089, ext: false },
+  { name: "Wilshire/La Brea",       lat: 34.0622, lng: -118.3440, ext: true  },
+  { name: "Wilshire/Fairfax",       lat: 34.0625, lng: -118.3611, ext: true  },
+  { name: "Wilshire/La Cienega",    lat: 34.0635, lng: -118.3762, ext: true  },
+  { name: "Wilshire/Rodeo",         lat: 34.0668, lng: -118.4006, ext: true  },
+  { name: "Century City",           lat: 34.0588, lng: -118.4178, ext: true  },
+  { name: "Westwood/UCLA",          lat: 34.0610, lng: -118.4448, ext: true  },
+  { name: "Westwood/VA Hospital",   lat: 34.0560, lng: -118.4585, ext: true  }
+];
+
+/* ---- OPTIONAL: paste your published links here ---- */
+const ARCGIS_URL = "";   // e.g. "https://arcg.is/xxxxx"
+const REPO_URL   = "";   // e.g. "https://github.com/yourname/dline-vacant-parcels"
+
+/* =========================================================================
+   Below this line you generally don't need to edit anything.
+   ========================================================================= */
+
+// ---- data readout (auto-computed) ----
+const fmt = n => n.toLocaleString("en-US");
+const totalSqft = PARCELS.reduce((s,p) => s + (Number(p.size_sqft)||0), 0);
+const acres = (totalSqft / 43560).toFixed(1);
+const statuses = new Set(PARCELS.map(p => p.status)).size;
+const readoutData = [
+  { num: PARCELS.length, lbl: "Parcels surveyed" },
+  { num: fmt(totalSqft),  lbl: "Total square feet" },
+  { num: acres,           lbl: "Acres of land" },
+  { num: statuses,        lbl: "Status categories" }
+];
+document.getElementById("readout").innerHTML = readoutData.map(d =>
+  `<div class="cell"><div class="num">${d.num}</div><div class="lbl">${d.lbl}</div></div>`
+).join("");
+
+// ---- corridor signature (header SVG) ----
+(function buildCorridor(){
+  const g = document.querySelector(".corridor .stops");
+  if (!g) return;
+  const n = STATIONS.length, x0 = 40, x1 = 920, y = 56;
+  STATIONS.forEach((s, i) => {
+    const x = x0 + (x1 - x0) * (i / (n - 1));
+    const c = document.createElementNS("http://www.w3.org/2000/svg","circle");
+    c.setAttribute("cx", x); c.setAttribute("cy", y); c.setAttribute("r", 7);
+    c.setAttribute("class", "stop" + (s.ext ? " ext" : ""));
+    g.appendChild(c);
+    const t = document.createElementNS("http://www.w3.org/2000/svg","text");
+    t.setAttribute("x", x); t.setAttribute("y", i % 2 ? y + 26 : y - 16);
+    t.setAttribute("text-anchor", "middle");
+    t.setAttribute("class", "stoplabel" + (s.ext ? " ext" : ""));
+    t.textContent = s.name.replace("Wilshire/", "");
+    g.appendChild(t);
+  });
+})();
+
+// ---- footer links ----
+(function links(){
+  const a = document.getElementById("link-arcgis"), r = document.getElementById("link-repo");
+  if (ARCGIS_URL) a.href = ARCGIS_URL; else a.style.opacity = .45;
+  if (REPO_URL)   r.href = REPO_URL;   else r.style.opacity = .45;
+})();
+
+// ---- map ----
+const map = L.map("map", { scrollWheelZoom: false }).setView([34.0625, -118.355], 12);
+L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
+  attribution: '&copy; OpenStreetMap &copy; CARTO', maxZoom: 19
+}).addTo(map);
+map.on("click", () => map.scrollWheelZoom.enable());
+
+// station reference dots
+STATIONS.forEach(s => {
+  L.circleMarker([s.lat, s.lng], {
+    radius: 5, color: "#7B3FA0", weight: 2, fillColor: "#7B3FA0",
+    fillOpacity: s.ext ? 1 : 0.25
+  }).addTo(map).bindTooltip(s.name, { direction: "top" });
+});
+
+// parcels (amber) + fit bounds
+const bounds = [];
+PARCELS.forEach(p => {
+  bounds.push([p.lat, p.lng]);
+  L.circleMarker([p.lat, p.lng], {
+    radius: 9, color: "#B97E0E", weight: 2, fillColor: "#E0A11B", fillOpacity: 0.9
+  }).addTo(map).bindPopup(
+    `<div class="pop-addr">${p.address}</div>
+     <div class="pop-row">APN ${p.apn}</div>
+     <div class="pop-row">${fmt(p.size_sqft)} sq ft &middot; ${p.zoning}</div>
+     <span class="pop-status">${p.status}</span>
+     <div class="pop-row" style="margin-top:8px;color:#211B33;">${p.notes}</div>`
+  );
+});
+if (bounds.length) map.fitBounds(bounds, { padding: [60, 60], maxZoom: 14 });
+
+// ---- table (sortable) ----
+const tbody = document.querySelector("#parcel-table tbody");
+function renderRows(rows){
+  tbody.innerHTML = rows.map(p => `
+    <tr>
+      <td>${p.address}</td>
+      <td class="mono">${p.apn}</td>
+      <td class="mono">${fmt(p.size_sqft)}</td>
+      <td><span class="tag">${p.zoning}</span></td>
+      <td>${p.status}</td>
+      <td>${p.notes}</td>
+    </tr>`).join("");
+}
+renderRows(PARCELS);
+
+let sortState = { key: null, dir: 1 };
+document.querySelectorAll("#parcel-table thead th").forEach(th => {
+  th.addEventListener("click", () => {
+    const key = th.dataset.key, type = th.dataset.type;
+    sortState.dir = (sortState.key === key) ? -sortState.dir : 1;
+    sortState.key = key;
+    const sorted = [...PARCELS].sort((a,b) => {
+      let va = a[key], vb = b[key];
+      if (type === "num") { va = Number(va); vb = Number(vb); return (va - vb) * sortState.dir; }
+      return String(va).localeCompare(String(vb)) * sortState.dir;
+    });
+    document.querySelectorAll("#parcel-table thead th").forEach(h => h.removeAttribute("aria-sort"));
+    th.setAttribute("aria-sort", sortState.dir === 1 ? "ascending" : "descending");
+    renderRows(sorted);
+  });
+});
+</script>
+</body>
+</html>
