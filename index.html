@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Vacant Parcels Along the D Line Extension — Field Survey</title>
+<title>Vacant Parcels Along the D Line Extension: Field Survey</title>
 <meta name="description" content="A field survey of vacant and underutilized parcels along the Los Angeles Metro D Line (Purple Line) extension corridor." />
 
 <!-- Leaflet (map library) -->
@@ -20,7 +20,7 @@
     --purple:       #7B3FA0;   /* D Line anchor */
     --purple-light: #A45FC4;
     --purple-tint:  #ECE2F4;
-    --signal:       #E0A11B;   /* amber — vacant/opportunity marker */
+    --signal:       #E0A11B;   /* amber, vacant/opportunity marker */
     --ink:          #211B33;
     --ink-soft:     #635C7A;
     --paper:        #F3F1F8;
@@ -173,7 +173,7 @@
 
 <header class="hero">
   <div class="wrap">
-    <p class="eyebrow">Field Survey &middot; Los Angeles</p>
+    <p class="eyebrow">Field Survey, Los Angeles</p>
     <h1>Vacant parcels along the D&nbsp;Line extension.</h1>
     <p class="lede">A walking survey of vacant and underutilized land within the Wilshire corridor, mapped parcel by parcel as the subway pushes west.</p>
 
@@ -187,12 +187,12 @@
     <div class="corridor-key">
       <span><i class="dot existing"></i> Existing (1996)</span>
       <span><i class="dot open"></i> Opened May 2026</span>
-      <span><i class="dot s2"></i> Section 2 &mdash; Spring 2027</span>
-      <span><i class="dot s3"></i> Section 3 &mdash; Fall 2027</span>
+      <span><i class="dot s2"></i> Section 2 (Spring 2027)</span>
+      <span><i class="dot s3"></i> Section 3 (Fall 2027)</span>
     </div>
     <p class="corridor-src">Station status and forecasted opening dates: <a href="https://www.metro.net/documents/2025/11/d-line-subway-extension-2025.pdf" target="_blank" rel="noopener">LA Metro, D Line Subway Extension fact sheet</a> (Nov 2025).</p>
 
-    <!-- DATA READOUT — pulled live from your parcel data below -->
+    <!-- DATA READOUT, pulled live from your parcel data below -->
     <div class="readout" id="readout"></div>
   </div>
 </header>
@@ -202,7 +202,7 @@
     <div class="section-head">
       <p class="eyebrow">01 / The map</p>
       <h2>Every surveyed parcel, on the line</h2>
-      <p>Amber markers are the surveyed parcels &mdash; the vacant and underused lots. The teal-green dots are the <span id="photo-count">&hellip;</span> geotagged field photos; click any one to see the picture. Purple markers are the D&nbsp;Line stations, for reference. Use the toggle at the map&rsquo;s top-right corner to turn each layer on or off.</p>
+      <p>Amber markers are the surveyed parcels, the vacant and underused lots. The teal-green dots are the <span id="photo-count">&hellip;</span> geotagged field photos; click any one to see the picture. Purple markers are the D&nbsp;Line stations, for reference. Use the toggle at the map&rsquo;s top-right corner to turn each layer on or off.</p>
     </div>
     <div id="map"></div>
   </div>
@@ -213,7 +213,7 @@
     <div class="section-head">
       <p class="eyebrow">02 / The data</p>
       <h2>The survey, as a table</h2>
-      <p>Click any column heading to sort. This is the same dataset that draws the map &mdash; one source, two views.</p>
+      <p>Click any column heading to sort. This is the same dataset that draws the map: one source, two views.</p>
     </div>
     <div class="table-scroll">
       <table id="parcel-table">
@@ -313,8 +313,8 @@ const STATIONS = [
 ];
 
 /* ---- OPTIONAL: paste your published links here ---- */
-const ARCGIS_URL = "";   // e.g. "https://arcg.is/xxxxx"
-const REPO_URL   = "";   // e.g. "https://github.com/yourname/dline-vacant-parcels"
+const ARCGIS_URL = "https://arcg.is/0X1bj4";   // public ArcGIS Online map
+const REPO_URL   = "https://github.com/tedmccormick/D_Line_Extension_Vacant_Parcels";   // GitHub source
 
 /* =========================================================================
    Below this line you generally don't need to edit anything.
@@ -421,10 +421,10 @@ STATIONS.forEach(s => {
   let style, note;
   if (s.status === "open") {
     style = { radius: 7, color: "#E0A11B", weight: 3, fillColor: "#7B3FA0", fillOpacity: 1 };
-    note  = " — opened " + (s.opens || "May 2026");
+    note  = ", opened " + (s.opens || "May 2026");
   } else if (s.status === "future") {
     style = { radius: 5, color: "#A45FC4", weight: 2, fillColor: "#A45FC4", fillOpacity: 0.25, dashArray: "2,3" };
-    note  = " — opening " + (s.opens || "2027");
+    note  = ", opening " + (s.opens || "2027");
   } else {
     style = { radius: 5, color: "#7B3FA0", weight: 2, fillColor: "#FFFFFF", fillOpacity: 1 };
     note  = "";
@@ -443,7 +443,7 @@ PARCELS.forEach(p => {
   }).bindPopup(
     `<div class="pop-addr">${p.address}</div>
      <div class="pop-row">APN ${p.apn}</div>
-     <div class="pop-row">${fmt(p.size_sqft)} sq ft &middot; ${p.zoning}</div>
+     <div class="pop-row">${fmt(p.size_sqft)} sq ft, ${p.zoning}</div>
      <span class="pop-status">${p.status}</span>
      <div class="pop-row" style="margin-top:8px;color:#211B33;">${p.notes}</div>`
   ).addTo(parcelLayer);
@@ -490,7 +490,7 @@ fetch("photos.csv")
 // ---- layer toggle (top-right) ----
 L.control.layers(null, {
   "Survey photos": photoLayer,
-  "Parcels":       parcelLayer,
+  "Vacant lots":   parcelLayer,
   "Stations":      stationLayer
 }, { collapsed: false }).addTo(map);
 
