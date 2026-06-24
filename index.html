@@ -85,17 +85,24 @@
   .corridor .stop.existing { fill: var(--surface); stroke: var(--purple); }
   .corridor .stop.open { fill: var(--purple); stroke: var(--signal); stroke-width: 4; }
   .corridor .stop.future { fill: var(--surface); stroke: var(--purple-light); stroke-width: 3; stroke-dasharray: 2.5 3; }
+  .corridor .stop.future.s3 { opacity: .58; }
   .corridor .stoplabel { font-family: 'IBM Plex Mono', monospace; font-size: 10px; fill: var(--ink-soft); }
   .corridor .stoplabel.open { fill: var(--purple); font-weight: 500; }
   .corridor .stoplabel.future { fill: var(--ink-soft); opacity: .65; }
+  .corridor .stopdate { font-family: 'IBM Plex Mono', monospace; font-size: 8px; letter-spacing: .03em; }
+  .corridor .stopdate.open { fill: var(--purple); }
+  .corridor .stopdate.future { fill: var(--ink-soft); opacity: .7; }
   @keyframes pulse { 0%, 100% { opacity: .22; } 50% { opacity: .40; } }
 
-  .corridor-key { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--ink-soft); display: flex; gap: 24px; flex-wrap: wrap; margin-top: 4px; }
+  .corridor-key { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--ink-soft); display: flex; gap: 20px; flex-wrap: wrap; margin-top: 4px; }
   .corridor-key span { display: inline-flex; align-items: center; gap: 8px; }
   .dot { width: 12px; height: 12px; border-radius: 50%; box-sizing: border-box; flex: none; }
   .dot.existing { background: var(--surface); border: 3px solid var(--purple); }
   .dot.open { background: var(--purple); border: 3px solid var(--signal); }
-  .dot.future { background: var(--surface); border: 2px dashed var(--purple-light); }
+  .dot.s2 { background: var(--surface); border: 2px dashed var(--purple-light); }
+  .dot.s3 { background: var(--surface); border: 2px dashed var(--purple-light); opacity: .58; }
+  .corridor-src { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--ink-soft); margin-top: 12px; }
+  .corridor-src a { color: var(--purple); }
 
   /* ---- data readout strip ---- */
   .readout { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--rule);
@@ -178,10 +185,12 @@
       </svg>
     </div>
     <div class="corridor-key">
-      <span><i class="dot existing"></i> Existing station (1996)</span>
+      <span><i class="dot existing"></i> Existing (1996)</span>
       <span><i class="dot open"></i> Opened May 2026</span>
-      <span><i class="dot future"></i> Under construction (2027)</span>
+      <span><i class="dot s2"></i> Section 2 &mdash; Spring 2027</span>
+      <span><i class="dot s3"></i> Section 3 &mdash; Fall 2027</span>
     </div>
+    <p class="corridor-src">Station status and forecasted opening dates: <a href="https://www.metro.net/documents/2025/11/d-line-subway-extension-2025.pdf" target="_blank" rel="noopener">LA Metro, D Line Subway Extension fact sheet</a> (Nov 2025).</p>
 
     <!-- DATA READOUT — pulled live from your parcel data below -->
     <div class="readout" id="readout"></div>
@@ -294,13 +303,13 @@ const STATIONS = [
   { name: "Wilshire/Vermont",       lat: 34.0623, lng: -118.2913, status: "existing" },
   { name: "Wilshire/Normandie",     lat: 34.0617, lng: -118.3003, status: "existing" },
   { name: "Wilshire/Western",       lat: 34.0617, lng: -118.3089, status: "existing" },
-  { name: "Wilshire/La Brea",       lat: 34.0622, lng: -118.3440, status: "open"     },
-  { name: "Wilshire/Fairfax",       lat: 34.0625, lng: -118.3611, status: "open"     },
-  { name: "Wilshire/La Cienega",    lat: 34.0635, lng: -118.3762, status: "open"     },
-  { name: "Wilshire/Rodeo",         lat: 34.0668, lng: -118.4006, status: "future"   },
-  { name: "Century City",           lat: 34.0588, lng: -118.4178, status: "future"   },
-  { name: "Westwood/UCLA",          lat: 34.0610, lng: -118.4448, status: "future"   },
-  { name: "Westwood/VA Hospital",   lat: 34.0560, lng: -118.4585, status: "future"   }
+  { name: "Wilshire/La Brea",       lat: 34.0622, lng: -118.3440, status: "open",   opens: "May 2026"    },
+  { name: "Wilshire/Fairfax",       lat: 34.0625, lng: -118.3611, status: "open",   opens: "May 2026"    },
+  { name: "Wilshire/La Cienega",    lat: 34.0635, lng: -118.3762, status: "open",   opens: "May 2026"    },
+  { name: "Beverly Dr",             lat: 34.0668, lng: -118.4006, status: "future", section: 2, opens: "Spring 2027" },
+  { name: "Century City",           lat: 34.0588, lng: -118.4178, status: "future", section: 2, opens: "Spring 2027" },
+  { name: "Westwood/UCLA",          lat: 34.0610, lng: -118.4448, status: "future", section: 3, opens: "Fall 2027"   },
+  { name: "Westwood/VA Hospital",   lat: 34.0560, lng: -118.4585, status: "future", section: 3, opens: "Fall 2027"   }
 ];
 
 /* ---- OPTIONAL: paste your published links here ---- */
@@ -361,15 +370,26 @@ document.getElementById("readout").innerHTML = readoutData.map(d =>
     const c = document.createElementNS(SVGNS, "circle");
     c.setAttribute("cx", x); c.setAttribute("cy", y);
     c.setAttribute("r", s.status === "open" ? 8 : 7);
-    c.setAttribute("class", "stop " + s.status);
+    c.setAttribute("class", "stop " + s.status + (s.section ? " s" + s.section : ""));
     stops.appendChild(c);
 
+    const anchor = i === 0 ? "start" : i === n - 1 ? "end" : "middle";
     const t = document.createElementNS(SVGNS, "text");
     t.setAttribute("x", x); t.setAttribute("y", i % 2 ? y + 26 : y - 16);
-    t.setAttribute("text-anchor", i === 0 ? "start" : i === n - 1 ? "end" : "middle");
+    t.setAttribute("text-anchor", anchor);
     t.setAttribute("class", "stoplabel " + s.status);
     t.textContent = s.name.replace("Wilshire/", "");
     stops.appendChild(t);
+
+    // date tag, set just outboard of the station name so it reads dot -> name -> date
+    if (s.opens) {
+      const d = document.createElementNS(SVGNS, "text");
+      d.setAttribute("x", x); d.setAttribute("y", i % 2 ? y + 38 : y - 28);
+      d.setAttribute("text-anchor", anchor);
+      d.setAttribute("class", "stopdate " + s.status);
+      d.textContent = s.opens;
+      stops.appendChild(d);
+    }
   });
 })();
 
@@ -401,10 +421,10 @@ STATIONS.forEach(s => {
   let style, note;
   if (s.status === "open") {
     style = { radius: 7, color: "#E0A11B", weight: 3, fillColor: "#7B3FA0", fillOpacity: 1 };
-    note  = " — opened May 2026";
+    note  = " — opened " + (s.opens || "May 2026");
   } else if (s.status === "future") {
     style = { radius: 5, color: "#A45FC4", weight: 2, fillColor: "#A45FC4", fillOpacity: 0.25, dashArray: "2,3" };
-    note  = " — under construction (2027)";
+    note  = " — opening " + (s.opens || "2027");
   } else {
     style = { radius: 5, color: "#7B3FA0", weight: 2, fillColor: "#FFFFFF", fillOpacity: 1 };
     note  = "";
