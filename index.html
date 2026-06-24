@@ -78,18 +78,24 @@
   /* ---- the signature: the corridor rendered as a transit line ---- */
   .corridor { margin: 44px 0 8px; overflow-x: auto; padding-bottom: 8px; }
   .corridor svg { display: block; min-width: 720px; width: 100%; height: 132px; }
-  .corridor .track { fill: none; stroke: var(--purple); stroke-width: 5; stroke-linecap: round;
-    stroke-dasharray: 1200; stroke-dashoffset: 1200; animation: draw 1.6s ease forwards; }
-  .corridor .stop { fill: var(--surface); stroke: var(--purple); stroke-width: 4; }
-  .corridor .stop.ext { fill: var(--purple); }
+  .corridor .seg { stroke: var(--purple); stroke-width: 5; stroke-linecap: round; }
+  .corridor .seg.dashed { stroke: var(--purple-light); stroke-width: 4; stroke-dasharray: 2 9; }
+  .corridor .halo { fill: var(--signal); opacity: .22; animation: pulse 2.4s ease-in-out infinite; }
+  .corridor .stop { fill: var(--surface); stroke-width: 4; }
+  .corridor .stop.existing { fill: var(--surface); stroke: var(--purple); }
+  .corridor .stop.open { fill: var(--purple); stroke: var(--signal); stroke-width: 4; }
+  .corridor .stop.future { fill: var(--surface); stroke: var(--purple-light); stroke-width: 3; stroke-dasharray: 2.5 3; }
   .corridor .stoplabel { font-family: 'IBM Plex Mono', monospace; font-size: 10px; fill: var(--ink-soft); }
-  .corridor .stoplabel.ext { fill: var(--purple); font-weight: 500; }
-  @keyframes draw { to { stroke-dashoffset: 0; } }
+  .corridor .stoplabel.open { fill: var(--purple); font-weight: 500; }
+  .corridor .stoplabel.future { fill: var(--ink-soft); opacity: .65; }
+  @keyframes pulse { 0%, 100% { opacity: .22; } 50% { opacity: .40; } }
 
   .corridor-key { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--ink-soft); display: flex; gap: 24px; flex-wrap: wrap; margin-top: 4px; }
   .corridor-key span { display: inline-flex; align-items: center; gap: 8px; }
-  .dot { width: 11px; height: 11px; border-radius: 50%; border: 3px solid var(--purple); background: var(--surface); }
-  .dot.ext { background: var(--purple); }
+  .dot { width: 12px; height: 12px; border-radius: 50%; box-sizing: border-box; flex: none; }
+  .dot.existing { background: var(--surface); border: 3px solid var(--purple); }
+  .dot.open { background: var(--purple); border: 3px solid var(--signal); }
+  .dot.future { background: var(--surface); border: 2px dashed var(--purple-light); }
 
   /* ---- data readout strip ---- */
   .readout { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--rule);
@@ -151,7 +157,7 @@
     #map { height: 420px; }
   }
   @media (prefers-reduced-motion: reduce) {
-    .corridor .track { animation: none; stroke-dashoffset: 0; }
+    .corridor .halo { animation: none; }
     html { scroll-behavior: auto; }
   }
 </style>
@@ -167,14 +173,14 @@
     <!-- SIGNATURE: the corridor itself, drawn as a transit line. Filled dots = new extension stations. -->
     <div class="corridor" aria-hidden="true">
       <svg viewBox="0 0 960 132" preserveAspectRatio="xMinYMid meet" role="img">
-        <line class="track" x1="40" y1="56" x2="920" y2="56" />
-        <!-- stations: x, label, ext? -->
+        <g class="track"></g>
         <g class="stops"></g>
       </svg>
     </div>
     <div class="corridor-key">
-      <span><i class="dot"></i> Existing station</span>
-      <span><i class="dot ext"></i> Extension station</span>
+      <span><i class="dot existing"></i> Existing station (1996)</span>
+      <span><i class="dot open"></i> Opened May 2026</span>
+      <span><i class="dot future"></i> Under construction (2027)</span>
     </div>
 
     <!-- DATA READOUT — pulled live from your parcel data below -->
@@ -285,16 +291,16 @@ const PARCELS = [
 ];
 
 const STATIONS = [
-  { name: "Wilshire/Vermont",       lat: 34.0623, lng: -118.2913, ext: false },
-  { name: "Wilshire/Normandie",     lat: 34.0617, lng: -118.3003, ext: false },
-  { name: "Wilshire/Western",       lat: 34.0617, lng: -118.3089, ext: false },
-  { name: "Wilshire/La Brea",       lat: 34.0622, lng: -118.3440, ext: true  },
-  { name: "Wilshire/Fairfax",       lat: 34.0625, lng: -118.3611, ext: true  },
-  { name: "Wilshire/La Cienega",    lat: 34.0635, lng: -118.3762, ext: true  },
-  { name: "Wilshire/Rodeo",         lat: 34.0668, lng: -118.4006, ext: true  },
-  { name: "Century City",           lat: 34.0588, lng: -118.4178, ext: true  },
-  { name: "Westwood/UCLA",          lat: 34.0610, lng: -118.4448, ext: true  },
-  { name: "Westwood/VA Hospital",   lat: 34.0560, lng: -118.4585, ext: true  }
+  { name: "Wilshire/Vermont",       lat: 34.0623, lng: -118.2913, status: "existing" },
+  { name: "Wilshire/Normandie",     lat: 34.0617, lng: -118.3003, status: "existing" },
+  { name: "Wilshire/Western",       lat: 34.0617, lng: -118.3089, status: "existing" },
+  { name: "Wilshire/La Brea",       lat: 34.0622, lng: -118.3440, status: "open"     },
+  { name: "Wilshire/Fairfax",       lat: 34.0625, lng: -118.3611, status: "open"     },
+  { name: "Wilshire/La Cienega",    lat: 34.0635, lng: -118.3762, status: "open"     },
+  { name: "Wilshire/Rodeo",         lat: 34.0668, lng: -118.4006, status: "future"   },
+  { name: "Century City",           lat: 34.0588, lng: -118.4178, status: "future"   },
+  { name: "Westwood/UCLA",          lat: 34.0610, lng: -118.4448, status: "future"   },
+  { name: "Westwood/VA Hospital",   lat: 34.0560, lng: -118.4585, status: "future"   }
 ];
 
 /* ---- OPTIONAL: paste your published links here ---- */
@@ -322,21 +328,48 @@ document.getElementById("readout").innerHTML = readoutData.map(d =>
 
 // ---- corridor signature (header SVG) ----
 (function buildCorridor(){
-  const g = document.querySelector(".corridor .stops");
-  if (!g) return;
-  const n = STATIONS.length, x0 = 40, x1 = 920, y = 56;
-  STATIONS.forEach((s, i) => {
-    const x = x0 + (x1 - x0) * (i / (n - 1));
-    const c = document.createElementNS("http://www.w3.org/2000/svg","circle");
-    c.setAttribute("cx", x); c.setAttribute("cy", y); c.setAttribute("r", 7);
-    c.setAttribute("class", "stop" + (s.ext ? " ext" : ""));
-    g.appendChild(c);
-    const t = document.createElementNS("http://www.w3.org/2000/svg","text");
+  const SVGNS = "http://www.w3.org/2000/svg";
+  const track = document.querySelector(".corridor .track");
+  const stops = document.querySelector(".corridor .stops");
+  if (!track || !stops) return;
+
+  // Display geographically: west on the LEFT, east on the RIGHT.
+  // STATIONS is stored east->west, so reverse it for the drawing order.
+  const disp = [...STATIONS].reverse();
+  const n = disp.length, x0 = 52, x1 = 908, y = 56;
+  const X = i => x0 + (x1 - x0) * (i / (n - 1));
+
+  // track as segments; any segment touching a future station is drawn dashed
+  for (let i = 0; i < n - 1; i++) {
+    const seg = document.createElementNS(SVGNS, "line");
+    seg.setAttribute("x1", X(i));   seg.setAttribute("y1", y);
+    seg.setAttribute("x2", X(i+1)); seg.setAttribute("y2", y);
+    const dashed = disp[i].status === "future" || disp[i+1].status === "future";
+    seg.setAttribute("class", "seg" + (dashed ? " dashed" : ""));
+    track.appendChild(seg);
+  }
+
+  disp.forEach((s, i) => {
+    const x = X(i);
+    // glow behind the just-opened stations
+    if (s.status === "open") {
+      const halo = document.createElementNS(SVGNS, "circle");
+      halo.setAttribute("cx", x); halo.setAttribute("cy", y); halo.setAttribute("r", 12);
+      halo.setAttribute("class", "halo");
+      stops.appendChild(halo);
+    }
+    const c = document.createElementNS(SVGNS, "circle");
+    c.setAttribute("cx", x); c.setAttribute("cy", y);
+    c.setAttribute("r", s.status === "open" ? 8 : 7);
+    c.setAttribute("class", "stop " + s.status);
+    stops.appendChild(c);
+
+    const t = document.createElementNS(SVGNS, "text");
     t.setAttribute("x", x); t.setAttribute("y", i % 2 ? y + 26 : y - 16);
-    t.setAttribute("text-anchor", "middle");
-    t.setAttribute("class", "stoplabel" + (s.ext ? " ext" : ""));
+    t.setAttribute("text-anchor", i === 0 ? "start" : i === n - 1 ? "end" : "middle");
+    t.setAttribute("class", "stoplabel " + s.status);
     t.textContent = s.name.replace("Wilshire/", "");
-    g.appendChild(t);
+    stops.appendChild(t);
   });
 })();
 
@@ -361,10 +394,20 @@ const photoLayer   = L.layerGroup().addTo(map);
 
 // station reference dots
 STATIONS.forEach(s => {
-  L.circleMarker([s.lat, s.lng], {
-    radius: 5, color: "#7B3FA0", weight: 2, fillColor: "#7B3FA0",
-    fillOpacity: s.ext ? 1 : 0.25
-  }).bindTooltip(s.name, { direction: "top" }).addTo(stationLayer);
+  let style, note;
+  if (s.status === "open") {
+    style = { radius: 7, color: "#E0A11B", weight: 3, fillColor: "#7B3FA0", fillOpacity: 1 };
+    note  = " — opened May 2026";
+  } else if (s.status === "future") {
+    style = { radius: 5, color: "#A45FC4", weight: 2, fillColor: "#A45FC4", fillOpacity: 0.25, dashArray: "2,3" };
+    note  = " — under construction (2027)";
+  } else {
+    style = { radius: 5, color: "#7B3FA0", weight: 2, fillColor: "#FFFFFF", fillOpacity: 1 };
+    note  = "";
+  }
+  L.circleMarker([s.lat, s.lng], style)
+    .bindTooltip(s.name + note, { direction: "top" })
+    .addTo(stationLayer);
 });
 
 // parcels (amber)
