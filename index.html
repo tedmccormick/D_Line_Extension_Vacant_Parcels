@@ -193,7 +193,7 @@
     <div class="section-head">
       <p class="eyebrow">01 / The map</p>
       <h2>Every surveyed parcel, on the line</h2>
-      <p>Amber markers are surveyed parcels and purple markers are corridor stations. The teal dots are <span id="photo-count">&hellip;</span> geotagged field photos &mdash; click any dot to see the picture. Use the toggle at the map&rsquo;s top-right corner to turn each layer on or off.</p>
+      <p>Amber markers are the surveyed parcels &mdash; the vacant and underused lots. The teal-green dots are the <span id="photo-count">&hellip;</span> geotagged field photos; click any one to see the picture. Purple markers are the D&nbsp;Line stations, for reference. Use the toggle at the map&rsquo;s top-right corner to turn each layer on or off.</p>
     </div>
     <div id="map"></div>
   </div>
@@ -387,6 +387,10 @@ L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
 }).addTo(map);
 map.on("click", () => map.scrollWheelZoom.enable());
 
+// dedicated pane so the dense photo swarm sits BENEATH parcels and stations
+map.createPane("photos");
+map.getPane("photos").style.zIndex = 390;   // below the default overlay pane (400)
+
 // ---- toggleable layer groups ----
 const stationLayer = L.layerGroup().addTo(map);
 const parcelLayer  = L.layerGroup().addTo(map);
@@ -444,6 +448,7 @@ fetch("photos.csv")
       pts.push([lat, lng]);
       const name = src.split("/").pop();
       L.circleMarker([lat, lng], {
+        pane: "photos",
         radius: 4, color: "#1C6E6A", weight: 1, fillColor: "#2A9D8F", fillOpacity: 0.85
       }).bindPopup(
         `<img class="pop-img" src="${src}" loading="lazy" alt="${name}" />
