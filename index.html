@@ -389,9 +389,6 @@ map.createPane("dline");
 map.getPane("dline").style.zIndex = 360;
 
 // ---- toggleable layer groups ----
-const origLayer   = L.layerGroup().addTo(map);   // original spur, 1996
-const phase1Layer = L.layerGroup().addTo(map);   // opened May 8, 2026
-const futureLayer = L.layerGroup().addTo(map);   // Phase 2 and 3, 2027
 const photoLayer  = L.layerGroup().addTo(map);
 
 // station reference dots
@@ -400,32 +397,7 @@ const stationStyle = {
   phase1:   { radius: 7, color: "#E0A11B", weight: 3, fillColor: "#7B3FA0", fillOpacity: 1 },  // purple, gold rim
   future:   { radius: 6, color: "#B0B0B0", weight: 2, fillColor: "#B89BD6", fillOpacity: 1 }   // light purple, grey rim
 };
-const stationGroups = { original: origLayer, phase1: phase1Layer, future: futureLayer };
-STATIONS.forEach(s => {
-  L.circleMarker([s.lat, s.lng], stationStyle[s.cat])
-    .bindTooltip(s.name, { direction: "top" })
-    .addTo(stationGroups[s.cat]);
-});
-
-// load station points from a GeoJSON file into a layer group with a given style
-function loadStations(file, style, group){
-  fetch(file)
-    .then(r => { if (!r.ok) throw new Error(file + " not found (" + r.status + ")"); return r.json(); })
-    .then(geo => {
-      L.geoJSON(geo, {
-        pointToLayer: (f, latlng) => L.circleMarker(latlng, style),
-        onEachFeature: (f, lyr) => {
-          const p = f.properties || {};
-          const nm = p.name || p.Name || p.NAME || p.station || p.Station || p.STATION || p.STATIONNAM || "Station";
-          lyr.bindTooltip(nm, { direction: "top" });
-        }
-      }).addTo(group);
-    })
-    .catch(err => console.warn("Stations not loaded (" + file + "):", err.message));
-}
-loadStations("d_line_section1_stations.geojson", stationStyle.phase1, phase1Layer);
-loadStations("d_line_phase2_stations.geojson",   stationStyle.future, futureLayer);
-loadStations("d_line_phase3_stations.geojson",   stationStyle.future, futureLayer);
+// stations and lines load together, per section, in the SECTIONS block below
 
 // parcel layer removed for now (was placeholder sample data with false positives)
 const bounds = [];
@@ -467,33 +439,70 @@ fetch("photos.csv")
     console.warn("Photo layer not loaded:", err.message);
   });
 
-// ---- route lines: each entry loads one or more GeoJSON files into a single toggle ----
-// To add another line later, copy a row and set its file(s), label, and color.
-const ROUTE_LINES = [
-  { files: ["a_lined_line_or_purple_line_spur.geojson"],   label: "D Line Spur: Opened 1996", style: { color: "#7B3FA0", weight: 5, opacity: 0.9  } },
-  { files: ["a_lined_line_extension_section_one.geojson"], label: "D Line Extension 1", style: { color: "#E0A11B", weight: 5, opacity: 0.95 } },
-  { files: ["d_line_phase2.geojson", "d_linre_ext_phase3.geojson"], label: "D Line route, future (Phase 2 & 3)", style: { color: "#B89BD6", weight: 4, opacity: 0.9, dashArray: "6,6" } },
-  { files: ["a_lineb_red_line_dissolved.geojson"],         label: "B (Red) Line",                style: { color: "#D33A3A", weight: 4, opacity: 0.85 } }
+// ---- sections: each entry is ONE toggle carrying that section's line(s) AND station(s) ----
+// To adjust, edit a row: its label, color, line files, and station files.
+const SECTIONS = [
+  {
+    label: "D Line Spur (1996)",
+    lineFiles: ["a_lined_line_or_purple_line_spur.geojson"],
+    lineStyle: { color: "#7B3FA0", weight: 5, opacity: 0.9 },
+    stationFiles: [],
+    stationStyle: stationStyle.original,
+    hardStations: STATIONS            // the 3 spur stations (still hardcoded; no file yet)
+  },
+  {
+    label: "D Line Extension 1 (May 2026)",
+    lineFiles: ["a_lined_line_extension_section_one.geojson"],
+    lineStyle: { color: "#E0A11B", weight: 5, opacity: 0.95 },
+    stationFiles: ["d_line_section_1_stations_4326.geojson"],
+    stationStyle: stationStyle.phase1
+  },
+  {
+    label: "D Line Phase 2 & 3 (2027)",
+    lineFiles: ["d_line_phase2.geojson", "d_linre_ext_phase3.geojson"],
+    lineStyle: { color: "#B89BD6", weight: 4, opacity: 0.9, dashArray: "6,6" },
+    stationFiles: ["d_line_section2_stations_4326.geojson", "d_line_section3_stations4326.geojson"],
+    stationStyle: stationStyle.future
+  },
+  {
+    label: "B (Red) Line",
+    lineFiles: ["a_lineb_red_line_dissolved.geojson"],
+    lineStyle: { color: "#D33A3A", weight: 4, opacity: 0.85 },
+    stationFiles: [],
+    stationStyle: stationStyle.original
+  }
 ];
-const routeOverlays = {};
-ROUTE_LINES.forEach(cfg => {
+
+function loadGeo(file, onData){
+  fetch(file)
+    .then(r => { if (!r.ok) throw new Error(file + " not found (" + r.status + ")"); return r.json(); })
+    .then(onData)
+    .catch(err => console.warn("Not loaded (" + file + "):", err.message));
+}
+const stationName = p => (p||{}).name || (p||{}).Name || (p||{}).NAME || (p||{}).station || (p||{}).Station || (p||{}).STATION || (p||{}).STATIONNAM || "Station";
+
+const sectionOverlays = {};
+SECTIONS.forEach(sec => {
   const grp = L.layerGroup().addTo(map);
-  routeOverlays[cfg.label] = grp;
-  cfg.files.forEach(file => {
-    fetch(file)
-      .then(r => { if (!r.ok) throw new Error(file + " not found (" + r.status + ")"); return r.json(); })
-      .then(geo => { L.geoJSON(geo, { pane: "dline", style: cfg.style }).addTo(grp); })
-      .catch(err => console.warn("Route line not loaded:", err.message));
+  sectionOverlays[sec.label] = grp;
+  (sec.hardStations || []).forEach(s => {
+    L.circleMarker([s.lat, s.lng], sec.stationStyle).bindTooltip(s.name, { direction: "top" }).addTo(grp);
   });
+  (sec.lineFiles || []).forEach(file => loadGeo(file, geo => {
+    L.geoJSON(geo, { pane: "dline", style: sec.lineStyle }).addTo(grp);
+  }));
+  (sec.stationFiles || []).forEach(file => loadGeo(file, geo => {
+    L.geoJSON(geo, {
+      pointToLayer: (f, latlng) => L.circleMarker(latlng, sec.stationStyle),
+      onEachFeature: (f, lyr) => lyr.bindTooltip(stationName(f.properties), { direction: "top" })
+    }).addTo(grp);
+  }));
 });
 
 // ---- layer toggle (top-right) ----
 L.control.layers(null, Object.assign({
-  "Survey photos":                 photoLayer,
-  "D Line Spur Stations":          origLayer,
-  "Extension Phase 1":             phase1Layer,
-  "Future stations (Phase 2 & 3)": futureLayer
-}, routeOverlays), { collapsed: false }).addTo(map);
+  "Survey photos": photoLayer
+}, sectionOverlays), { collapsed: false }).addTo(map);
 
 // (data table removed for now: it displayed the same placeholder sample parcels)
 </script>
