@@ -293,9 +293,6 @@ const STATIONS = [
   { name: "Vermont/Wilshire",     lat: 34.0623, lng: -118.2913, cat: "original" },
   { name: "Normandie/Wilshire",   lat: 34.0617, lng: -118.3003, cat: "original" },
   { name: "Western/Wilshire",     lat: 34.0617, lng: -118.3089, cat: "original" },
-  { name: "La Brea/Wilshire",     lat: 34.0622, lng: -118.3440, cat: "phase1" },
-  { name: "Fairfax/Wilshire",     lat: 34.0625, lng: -118.3611, cat: "phase1" },
-  { name: "La Cienega/Wilshire",  lat: 34.0635, lng: -118.3762, cat: "phase1" },
   { name: "Beverly Drive",        lat: 34.0668, lng: -118.4006, cat: "future" },
   { name: "Century City",         lat: 34.0588, lng: -118.4178, cat: "future" },
   { name: "Westwood/UCLA",        lat: 34.0610, lng: -118.4448, cat: "future" },
@@ -414,6 +411,21 @@ STATIONS.forEach(s => {
     .addTo(stationGroups[s.cat]);
 });
 
+// Phase 1 stations loaded from an accurate file (replaces hardcoded coordinates)
+fetch("d_line_section1_stations.geojson")
+  .then(r => { if (!r.ok) throw new Error("d_line_section1_stations.geojson not found (" + r.status + ")"); return r.json(); })
+  .then(geo => {
+    L.geoJSON(geo, {
+      pointToLayer: (f, latlng) => L.circleMarker(latlng, stationStyle.phase1),
+      onEachFeature: (f, lyr) => {
+        const p = f.properties || {};
+        const nm = p.name || p.Name || p.NAME || p.station || p.Station || p.STATION || p.STATIONNAM || "Station";
+        lyr.bindTooltip(nm, { direction: "top" });
+      }
+    }).addTo(phase1Layer);
+  })
+  .catch(err => console.warn("Phase 1 stations not loaded:", err.message));
+
 // parcel layer removed for now (was placeholder sample data with false positives)
 const bounds = [];
 
@@ -454,21 +466,24 @@ fetch("photos.csv")
     console.warn("Photo layer not loaded:", err.message);
   });
 
-// ---- route lines: each entry loads one GeoJSON file into its own toggle ----
-// To add another line later, copy a row and set its file name, label, and color.
+// ---- route lines: each entry loads one or more GeoJSON files into a single toggle ----
+// To add another line later, copy a row and set its file(s), label, and color.
 const ROUTE_LINES = [
-  { file: "a_lined_line_or_purple_line_spur.geojson",   label: "D Line route, original spur", style: { color: "#7B3FA0", weight: 5, opacity: 0.9  } },
-  { file: "a_lined_line_extension_section_one.geojson", label: "D Line route, Phase 1 (new)", style: { color: "#E0A11B", weight: 5, opacity: 0.95 } },
-  { file: "a_lineb_red_line_dissolved.geojson",         label: "B (Red) Line",                style: { color: "#D33A3A", weight: 4, opacity: 0.85 } }
+  { files: ["a_lined_line_or_purple_line_spur.geojson"],   label: "D Line route, original spur", style: { color: "#7B3FA0", weight: 5, opacity: 0.9  } },
+  { files: ["a_lined_line_extension_section_one.geojson"], label: "D Line route, Phase 1 (new)", style: { color: "#E0A11B", weight: 5, opacity: 0.95 } },
+  { files: ["d_line_phase2.geojson", "d_linre_ext_phase3.geojson"], label: "D Line route, future (Phase 2 & 3)", style: { color: "#B89BD6", weight: 4, opacity: 0.9, dashArray: "6,6" } },
+  { files: ["a_lineb_red_line_dissolved.geojson"],         label: "B (Red) Line",                style: { color: "#D33A3A", weight: 4, opacity: 0.85 } }
 ];
 const routeOverlays = {};
 ROUTE_LINES.forEach(cfg => {
   const grp = L.layerGroup().addTo(map);
   routeOverlays[cfg.label] = grp;
-  fetch(cfg.file)
-    .then(r => { if (!r.ok) throw new Error(cfg.file + " not found (" + r.status + ")"); return r.json(); })
-    .then(geo => { L.geoJSON(geo, { pane: "dline", style: cfg.style }).addTo(grp); })
-    .catch(err => console.warn("Route line not loaded:", err.message));
+  cfg.files.forEach(file => {
+    fetch(file)
+      .then(r => { if (!r.ok) throw new Error(file + " not found (" + r.status + ")"); return r.json(); })
+      .then(geo => { L.geoJSON(geo, { pane: "dline", style: cfg.style }).addTo(grp); })
+      .catch(err => console.warn("Route line not loaded:", err.message));
+  });
 });
 
 // ---- layer toggle (top-right) ----
