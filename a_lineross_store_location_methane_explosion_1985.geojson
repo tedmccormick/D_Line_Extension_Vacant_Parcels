@@ -1,0 +1,8 @@
+{
+"type": "FeatureCollection",
+"name": "a_lineross_store_location_methane_explosion_1985",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "fid": 1, "name": "Ross Dress for Less", "event": "Ross Methane Gas Explosion", "address": "6298 W 3rd Street,  Los Angeles, CA 90036", "description": "Methane from Salt Lake Oil Field exploded at 4:47 PM,  ripping open the store roof and injuring 23. Cited by U.S.  House Rep. Henry Waxman to justify federal funding ban on Wilshire/Fairfax subway tunneling, redirecting Metro Red Line to Vermont alignment.", "source": "Elkind,  Railtown (UC Press, 2014); Ramos & Harvey, LA Times, 3/25/1985" }, "geometry": { "type": "Point", "coordinates": [ -118.358543717261369, 34.070458105603699 ] } }
+]
+}
