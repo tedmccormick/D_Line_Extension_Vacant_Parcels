@@ -292,11 +292,7 @@ const PARCELS = [
 const STATIONS = [
   { name: "Vermont/Wilshire",     lat: 34.0623, lng: -118.2913, cat: "original" },
   { name: "Normandie/Wilshire",   lat: 34.0617, lng: -118.3003, cat: "original" },
-  { name: "Western/Wilshire",     lat: 34.0617, lng: -118.3089, cat: "original" },
-  { name: "Beverly Drive",        lat: 34.0668, lng: -118.4006, cat: "future" },
-  { name: "Century City",         lat: 34.0588, lng: -118.4178, cat: "future" },
-  { name: "Westwood/UCLA",        lat: 34.0610, lng: -118.4448, cat: "future" },
-  { name: "Westwood/VA Hospital", lat: 34.0560, lng: -118.4585, cat: "future" }
+  { name: "Western/Wilshire",     lat: 34.0617, lng: -118.3089, cat: "original" }
 ];
 
 /* ---- OPTIONAL: paste your published links here ---- */
@@ -411,20 +407,25 @@ STATIONS.forEach(s => {
     .addTo(stationGroups[s.cat]);
 });
 
-// Phase 1 stations loaded from an accurate file (replaces hardcoded coordinates)
-fetch("d_line_section1_stations.geojson")
-  .then(r => { if (!r.ok) throw new Error("d_line_section1_stations.geojson not found (" + r.status + ")"); return r.json(); })
-  .then(geo => {
-    L.geoJSON(geo, {
-      pointToLayer: (f, latlng) => L.circleMarker(latlng, stationStyle.phase1),
-      onEachFeature: (f, lyr) => {
-        const p = f.properties || {};
-        const nm = p.name || p.Name || p.NAME || p.station || p.Station || p.STATION || p.STATIONNAM || "Station";
-        lyr.bindTooltip(nm, { direction: "top" });
-      }
-    }).addTo(phase1Layer);
-  })
-  .catch(err => console.warn("Phase 1 stations not loaded:", err.message));
+// load station points from a GeoJSON file into a layer group with a given style
+function loadStations(file, style, group){
+  fetch(file)
+    .then(r => { if (!r.ok) throw new Error(file + " not found (" + r.status + ")"); return r.json(); })
+    .then(geo => {
+      L.geoJSON(geo, {
+        pointToLayer: (f, latlng) => L.circleMarker(latlng, style),
+        onEachFeature: (f, lyr) => {
+          const p = f.properties || {};
+          const nm = p.name || p.Name || p.NAME || p.station || p.Station || p.STATION || p.STATIONNAM || "Station";
+          lyr.bindTooltip(nm, { direction: "top" });
+        }
+      }).addTo(group);
+    })
+    .catch(err => console.warn("Stations not loaded (" + file + "):", err.message));
+}
+loadStations("d_line_section1_stations.geojson", stationStyle.phase1, phase1Layer);
+loadStations("d_line_phase2_stations.geojson",   stationStyle.future, futureLayer);
+loadStations("d_line_phase3_stations.geojson",   stationStyle.future, futureLayer);
 
 // parcel layer removed for now (was placeholder sample data with false positives)
 const bounds = [];
@@ -469,8 +470,8 @@ fetch("photos.csv")
 // ---- route lines: each entry loads one or more GeoJSON files into a single toggle ----
 // To add another line later, copy a row and set its file(s), label, and color.
 const ROUTE_LINES = [
-  { files: ["a_lined_line_or_purple_line_spur.geojson"],   label: "D Line route, original spur", style: { color: "#7B3FA0", weight: 5, opacity: 0.9  } },
-  { files: ["a_lined_line_extension_section_one.geojson"], label: "D Line route, Phase 1 (new)", style: { color: "#E0A11B", weight: 5, opacity: 0.95 } },
+  { files: ["a_lined_line_or_purple_line_spur.geojson"],   label: "D Line Spur: Opened 1996", style: { color: "#7B3FA0", weight: 5, opacity: 0.9  } },
+  { files: ["a_lined_line_extension_section_one.geojson"], label: "D Line Extension 1", style: { color: "#E0A11B", weight: 5, opacity: 0.95 } },
   { files: ["d_line_phase2.geojson", "d_linre_ext_phase3.geojson"], label: "D Line route, future (Phase 2 & 3)", style: { color: "#B89BD6", weight: 4, opacity: 0.9, dashArray: "6,6" } },
   { files: ["a_lineb_red_line_dissolved.geojson"],         label: "B (Red) Line",                style: { color: "#D33A3A", weight: 4, opacity: 0.85 } }
 ];
@@ -489,7 +490,7 @@ ROUTE_LINES.forEach(cfg => {
 // ---- layer toggle (top-right) ----
 L.control.layers(null, Object.assign({
   "Survey photos":                 photoLayer,
-  "Original spur, opened 1996":    origLayer,
+  "D Line Spur Stations":          origLayer,
   "Extension Phase 1":             phase1Layer,
   "Future stations (Phase 2 & 3)": futureLayer
 }, routeOverlays), { collapsed: false }).addTo(map);
