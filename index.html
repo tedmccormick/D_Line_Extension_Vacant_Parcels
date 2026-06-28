@@ -393,7 +393,8 @@ const photoLayer  = L.layerGroup().addTo(map);
 
 // station reference dots
 const stationStyle = {
-  operational: { radius: 7, color: "#4A2575", weight: 3, fillColor: "#C4A8E0", fillOpacity: 1 },  // large: light purple, dark purple rim (spur + section 1)
+  spur:        { radius: 7, color: "#7B3FA0", weight: 3, fillColor: "#FFFFFF", fillOpacity: 1 },  // white center, purple rim
+  operational: { radius: 7, color: "#4A2575", weight: 3, fillColor: "#C4A8E0", fillOpacity: 1 },  // light purple, dark purple rim (section 1)
   future:      { radius: 6, color: "#B0B0B0", weight: 2, fillColor: "#B89BD6", fillOpacity: 1 },   // lighter: light purple, grey rim (sections 2 & 3)
   redline:     { radius: 5, color: "#D33A3A", weight: 2, fillColor: "#FFFFFF", fillOpacity: 1 }    // white center, red rim
 };
@@ -445,15 +446,15 @@ const SECTIONS = [
   {
     label: "D Line Spur (1996)",
     lineFiles: ["a_lined_line_or_purple_line_spur.geojson"],
-    lineStyle: { color: "#7B3FA0", weight: 5, opacity: 0.9 },
+    lineStyle: { color: "#7B3FA0", weight: 8, opacity: 0.9 },
     stationFiles: [],
-    stationStyle: stationStyle.operational,
+    stationStyle: stationStyle.spur,
     hardStations: STATIONS            // the 3 spur stations (still hardcoded; no file yet)
   },
   {
     label: "D Line Extension 1 (May 2026)",
     lineFiles: ["a_lined_line_extension_section_one.geojson"],
-    lineStyle: { color: "#7B3FA0", weight: 5, opacity: 0.95 },
+    lineStyle: { color: "#7B3FA0", weight: 8, opacity: 0.95 },
     stationFiles: ["d_line_section_1_stations_4326.geojson"],
     stationStyle: stationStyle.operational
   },
@@ -468,7 +469,7 @@ const SECTIONS = [
     label: "B (Red) Line",
     lineFiles: ["a_lineb_red_line_dissolved.geojson"],
     lineStyle: { color: "#D33A3A", weight: 4, opacity: 0.85 },
-    stationFiles: [],
+    stationFiles: ["b_line_stations_4326.geojson"],
     stationStyle: stationStyle.redline
   }
 ];
