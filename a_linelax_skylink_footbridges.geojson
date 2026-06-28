@@ -1,0 +1,12 @@
+{
+"type": "FeatureCollection",
+"name": "a_linelax_skylink_footbridges",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "fid": 1.0, "bridge_id": "eastern", "bridge_nam": "Eastern Bridge", "parent_sto": null, "terminal_c": "Terminal 7", "notes": null, "source": null }, "geometry": { "type": "MultiLineString", "coordinates": [ [ [ -118.399781515261452, 33.944371941725457 ], [ -118.399645250979034, 33.944384478348539 ], [ -118.399484757044178, 33.94418195288884 ], [ -118.399389084409108, 33.943582772112919 ], [ -118.399300926756268, 33.943035941232857 ] ] ] } },
+{ "type": "Feature", "properties": { "fid": 2.0, "bridge_id": "central_northeast", "bridge_nam": "Central Northeast", "parent_sto": "Central", "terminal_c": "Terminal 2", "notes": null, "source": null }, "geometry": { "type": "MultiLineString", "coordinates": [ [ [ -118.403394719227606, 33.944470602764873 ], [ -118.403083111420258, 33.944499636042117 ], [ -118.403151582084661, 33.945015007276012 ], [ -118.403063194461055, 33.945503402319289 ] ] ] } },
+{ "type": "Feature", "properties": { "fid": 3.0, "bridge_id": "central_south", "bridge_nam": "Central South", "parent_sto": "Central", "terminal_c": "Terminals 5 and 6", "notes": null, "source": null }, "geometry": { "type": "MultiLineString", "coordinates": [ [ [ -118.403083111420258, 33.944499636042117 ], [ -118.403230760390201, 33.944327277808043 ], [ -118.403212741013405, 33.944011103625648 ], [ -118.402889490551715, 33.943689071233031 ], [ -118.402812774049536, 33.943173727371793 ], [ -118.403008754934092, 33.942760595585028 ] ] ] } },
+{ "type": "Feature", "properties": { "fid": 4.0, "bridge_id": "central_northwest", "bridge_nam": "Central Northwest", "parent_sto": "Central", "terminal_c": "Terminal 2", "notes": null, "source": null }, "geometry": { "type": "MultiLineString", "coordinates": [ [ [ -118.404620475971342, 33.94435539235733 ], [ -118.404735778565183, 33.944329106682375 ], [ -118.404831297295999, 33.944802390036436 ], [ -118.40506007346066, 33.945255294486159 ] ] ] } },
+{ "type": "Feature", "properties": { "fid": 5.0, "bridge_id": "western_west", "bridge_nam": "Western West", "parent_sto": "Western", "terminal_c": "Tom Bradley International", "notes": null, "source": null }, "geometry": { "type": "MultiLineString", "coordinates": [ [ [ -118.407785494935126, 33.943657447365744 ], [ -118.407781765447567, 33.943633375365202 ], [ -118.408464251578593, 33.943559154687833 ] ] ] } }
+]
+}

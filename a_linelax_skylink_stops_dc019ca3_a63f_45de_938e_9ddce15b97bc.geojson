@@ -1,0 +1,10 @@
+{
+"type": "FeatureCollection",
+"name": "a_linelax_skylink_stops_dc019ca3_a63f_45de_938e_9ddce15b97bc",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "fid": 1.0, "stop_id": "west_stop", "stop_name": null, "status": null, "section": null, "jurisdicti": null, "terminals": null, "airlines": null, "notes": null, "sources": null }, "geometry": { "type": "MultiPolygon", "coordinates": [ [ [ [ -118.407972867018174, 33.943917067612233 ], [ -118.406496287621323, 33.944066591304299 ], [ -118.406496287621323, 33.944066591304299 ], [ -118.406453091102719, 33.943792579800153 ], [ -118.407935646597238, 33.943643036458091 ], [ -118.407972867018174, 33.943917067612233 ] ] ] ] } },
+{ "type": "Feature", "properties": { "fid": 2.0, "stop_id": "central_stop", "stop_name": null, "status": null, "section": null, "jurisdicti": null, "terminals": null, "airlines": null, "notes": null, "sources": null }, "geometry": { "type": "MultiPolygon", "coordinates": [ [ [ [ -118.404636957079987, 33.944446825679094 ], [ -118.403401732577365, 33.944573358513971 ], [ -118.40338626632338, 33.944365454162593 ], [ -118.40460796620367, 33.944240822069929 ], [ -118.404636957079987, 33.944446825679094 ] ] ] ] } },
+{ "type": "Feature", "properties": { "fid": 3.0, "stop_id": "east_stop", "stop_name": null, "status": null, "section": null, "jurisdicti": null, "terminals": null, "airlines": null, "notes": null, "sources": null }, "geometry": { "type": "MultiPolygon", "coordinates": [ [ [ [ -118.401030433126607, 33.944420491627142 ], [ -118.399802642301438, 33.94454802239418 ], [ -118.399802642301438, 33.94454802239418 ], [ -118.399776920149705, 33.944332036678965 ], [ -118.400998535085137, 33.944204526611855 ], [ -118.401030433126607, 33.944420491627142 ] ] ] ] } }
+]
+}
