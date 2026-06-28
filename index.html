@@ -422,7 +422,7 @@ fetch("photos.csv")
       const name = src.split("/").pop();
       L.circleMarker([lat, lng], {
         pane: "photos",
-        radius: 4, color: "#1C6E6A", weight: 1, fillColor: "#2A9D8F", fillOpacity: 0.85
+        radius: 4, color: "#0B8F6C", weight: 1, fillColor: "#15D6A2", fillOpacity: 0.9
       }).bindPopup(
         `<img class="pop-img" src="${src}" loading="lazy" alt="${name}" />
          <div class="pop-cap">${name}</div>`,
@@ -466,7 +466,7 @@ const SECTIONS = [
     stationStyle: stationStyle.future
   },
   {
-    label: "B (Red) Line: Finished in 2000",
+    label: "B (Red) Line",
     lineFiles: ["a_lineb_red_line_dissolved.geojson"],
     lineStyle: { color: "#D33A3A", weight: 16, opacity: 0.85 },
     stationFiles: ["b_line_stations_4326.geojson"],
