@@ -103,6 +103,7 @@
   .dot.s3 { background: var(--surface); border: 2px dashed var(--purple-light); opacity: .58; }
   .corridor-src { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--ink-soft); margin-top: 12px; }
   .policy-body { font-size: 17px; line-height: 1.7; max-width: 68ch; margin: 0 0 16px; color: var(--ink); }
+  .map-dates { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--ink-soft); margin: 14px 0 0; text-align: center; }
   .corridor-src a { color: var(--purple); }
 
   /* ---- data readout strip ---- */
@@ -183,6 +184,7 @@
 <section id="map-section">
   <div class="wrap">
     <div id="map"></div>
+    <p class="map-dates">D&nbsp;Line extension openings. Phase&nbsp;1: May&nbsp;8, 2026 &nbsp;&middot;&nbsp; Phase&nbsp;2: Spring 2027 &nbsp;&middot;&nbsp; Phase&nbsp;3: Fall 2027</p>
   </div>
 </section>
 
@@ -294,10 +296,10 @@ const STATIONS = [
   { name: "La Brea/Wilshire",     lat: 34.0622, lng: -118.3440, cat: "phase1" },
   { name: "Fairfax/Wilshire",     lat: 34.0625, lng: -118.3611, cat: "phase1" },
   { name: "La Cienega/Wilshire",  lat: 34.0635, lng: -118.3762, cat: "phase1" },
-  { name: "Beverly Drive",        lat: 34.0668, lng: -118.4006, cat: "phase2" },
-  { name: "Century City",         lat: 34.0588, lng: -118.4178, cat: "phase2" },
-  { name: "Westwood/UCLA",        lat: 34.0610, lng: -118.4448, cat: "phase3" },
-  { name: "Westwood/VA Hospital", lat: 34.0560, lng: -118.4585, cat: "phase3" }
+  { name: "Beverly Drive",        lat: 34.0668, lng: -118.4006, cat: "future" },
+  { name: "Century City",         lat: 34.0588, lng: -118.4178, cat: "future" },
+  { name: "Westwood/UCLA",        lat: 34.0610, lng: -118.4448, cat: "future" },
+  { name: "Westwood/VA Hospital", lat: 34.0560, lng: -118.4585, cat: "future" }
 ];
 
 /* ---- OPTIONAL: paste your published links here ---- */
@@ -396,21 +398,16 @@ map.getPane("dline").style.zIndex = 360;
 // ---- toggleable layer groups ----
 const origLayer   = L.layerGroup().addTo(map);   // original spur, 1996
 const phase1Layer = L.layerGroup().addTo(map);   // opened May 8, 2026
-const phase2Layer = L.layerGroup().addTo(map);   // Section 2, Spring 2027
-const phase3Layer = L.layerGroup().addTo(map);   // Section 3, Fall 2027
+const futureLayer = L.layerGroup().addTo(map);   // Phase 2 and 3, 2027
 const photoLayer  = L.layerGroup().addTo(map);
-const lineOrigLayer   = L.layerGroup().addTo(map);   // original D Line route
-const lineNewLayer    = L.layerGroup().addTo(map);   // newly opened segment
-const lineFutureLayer = L.layerGroup().addTo(map);   // future segments
 
 // station reference dots
 const stationStyle = {
   original: { radius: 5, color: "#7B3FA0", weight: 2, fillColor: "#FFFFFF", fillOpacity: 1 },  // white center, purple rim
   phase1:   { radius: 7, color: "#E0A11B", weight: 3, fillColor: "#7B3FA0", fillOpacity: 1 },  // purple, gold rim
-  phase2:   { radius: 6, color: "#B0B0B0", weight: 2, fillColor: "#B89BD6", fillOpacity: 1 },  // light purple, light grey rim
-  phase3:   { radius: 6, color: "#D8D8D8", weight: 2, fillColor: "#D9CCEC", fillOpacity: 1 }   // lighter purple, very light grey rim
+  future:   { radius: 6, color: "#B0B0B0", weight: 2, fillColor: "#B89BD6", fillOpacity: 1 }   // light purple, grey rim
 };
-const stationGroups = { original: origLayer, phase1: phase1Layer, phase2: phase2Layer, phase3: phase3Layer };
+const stationGroups = { original: origLayer, phase1: phase1Layer, future: futureLayer };
 STATIONS.forEach(s => {
   L.circleMarker([s.lat, s.lng], stationStyle[s.cat])
     .bindTooltip(s.name, { direction: "top" })
@@ -457,37 +454,30 @@ fetch("photos.csv")
     console.warn("Photo layer not loaded:", err.message);
   });
 
-// ---- D Line route (line, loaded from dline_extension.geojson, split by a "segment" field) ----
-// Each feature should carry a property segment = "original", "section1", or "future".
-fetch("dline_extension.geojson")
-  .then(r => { if (!r.ok) throw new Error("dline_extension.geojson not found (" + r.status + ")"); return r.json(); })
-  .then(geo => {
-    const lineStyle = {
-      original: { color: "#7B3FA0", weight: 5, opacity: 0.9 },                    // solid purple
-      section1: { color: "#E0A11B", weight: 5, opacity: 0.95 },                   // gold = newly opened
-      future:   { color: "#B89BD6", weight: 4, opacity: 0.9, dashArray: "6,6" }   // dashed light purple
-    };
-    const lineGroups = { original: lineOrigLayer, section1: lineNewLayer, future: lineFutureLayer };
-    const segOf = f => (f.properties && (f.properties.segment || f.properties.seg) || "original").toLowerCase();
-    L.geoJSON(geo, {
-      pane: "dline",
-      style: f => lineStyle[segOf(f)] || lineStyle.original,
-      onEachFeature: (f, lyr) => (lineGroups[segOf(f)] || lineOrigLayer).addLayer(lyr)
-    });
-  })
-  .catch(err => console.warn("D Line line not loaded:", err.message));
+// ---- route lines: each entry loads one GeoJSON file into its own toggle ----
+// To add another line later, copy a row and set its file name, label, and color.
+const ROUTE_LINES = [
+  { file: "a_lined_line_or_purple_line_spur.geojson",   label: "D Line route, original spur", style: { color: "#7B3FA0", weight: 5, opacity: 0.9  } },
+  { file: "a_lined_line_extension_section_one.geojson", label: "D Line route, Phase 1 (new)", style: { color: "#E0A11B", weight: 5, opacity: 0.95 } },
+  { file: "a_lineb_red_line_dissolved.geojson",         label: "B (Red) Line",                style: { color: "#D33A3A", weight: 4, opacity: 0.85 } }
+];
+const routeOverlays = {};
+ROUTE_LINES.forEach(cfg => {
+  const grp = L.layerGroup().addTo(map);
+  routeOverlays[cfg.label] = grp;
+  fetch(cfg.file)
+    .then(r => { if (!r.ok) throw new Error(cfg.file + " not found (" + r.status + ")"); return r.json(); })
+    .then(geo => { L.geoJSON(geo, { pane: "dline", style: cfg.style }).addTo(grp); })
+    .catch(err => console.warn("Route line not loaded:", err.message));
+});
 
 // ---- layer toggle (top-right) ----
-L.control.layers(null, {
-  "Survey photos":                        photoLayer,
-  "Original spur, open 1996":             origLayer,
-  "Extension Phase 1, open May 8, 2026":  phase1Layer,
-  "Phase 2, open Spring 2027":            phase2Layer,
-  "Phase 3, open Fall 2027":              phase3Layer,
-  "D Line route, original":               lineOrigLayer,
-  "D Line route, new segment":            lineNewLayer,
-  "D Line route, future segments":        lineFutureLayer
-}, { collapsed: false }).addTo(map);
+L.control.layers(null, Object.assign({
+  "Survey photos":                 photoLayer,
+  "Original spur, opened 1996":    origLayer,
+  "Extension Phase 1":             phase1Layer,
+  "Future stations (Phase 2 & 3)": futureLayer
+}, routeOverlays), { collapsed: false }).addTo(map);
 
 // (data table removed for now: it displayed the same placeholder sample parcels)
 </script>
