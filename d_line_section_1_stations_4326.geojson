@@ -1,0 +1,10 @@
+{
+"type": "FeatureCollection",
+"name": "d_line_section_1_stations_4326",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "fid": 1, "station_id": "dlinex_labrea", "station_name": "Wilshire / La Brea Station", "line": "D Line", "section": 1, "sb79_tier": 1, "status": "opening_imminent", "opening_date": "2026-05-08", "jurisdiction": "City of LA", "routes_served": "Metro D Line", "agency": "metro_rail", "notes": "Opening May 8, 2026. NW corner of Wilshire & La Brea per Streetsblog LA.", "source": "streetsblog_2025_06", "confidence": "high" }, "geometry": { "type": "Point", "coordinates": [ -118.344378688863202, 34.062519726672264 ] } },
+{ "type": "Feature", "properties": { "fid": 2, "station_id": "dlinex_fairfax", "station_name": "Wilshire / Fairfax Station", "line": "D Line", "section": 1, "sb79_tier": 1, "status": "opening_imminent", "opening_date": "2026-05-08", "jurisdiction": "City of LA", "routes_served": "Metro D Line", "agency": "metro_rail", "notes": "Opening May 8, 2026. South side of Wilshire between Orange Grove and Ogden, across from LACMA. Two entrances on east side of Fairfax per Metro fact sheet.  Note: SB 79's ½-mile TOD zone provisions do not apply to \nBeverly Hills due to the city's population being below 35,000", "source": "metro_facsheet_2025_10+streetsblog_2025_06", "confidence": "high" }, "geometry": { "type": "Point", "coordinates": [ -118.360110254301318, 34.062587134365124 ] } },
+{ "type": "Feature", "properties": { "fid": 3, "station_id": "dlinex_lacienega", "station_name": "Wilshire / La Cienega Station", "line": "D Line", "section": 1, "sb79_tier": 1, "status": "opening_imminent", "opening_date": "2026-05-08", "jurisdiction": "Beverly Hills", "routes_served": "Metro D Line", "agency": "metro_rail", "notes": "Opening May 8, 2026. NE corner of Wilshire & La Cienega per Beverly Hills city FAQ. Future Gale Yard mobility hub site.", "source": "beverly_hills_official_2026", "confidence": "high" }, "geometry": { "type": "Point", "coordinates": [ -118.375882228775481, 34.065389738892563 ] } }
+]
+}
