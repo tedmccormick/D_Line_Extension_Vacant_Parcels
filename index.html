@@ -20,7 +20,7 @@
     --purple:       #7B3FA0;   /* D Line anchor */
     --purple-light: #A45FC4;
     --purple-tint:  #ECE2F4;
-    --signal:       #E0A11B;   /* amber, vacant/opportunity marker */
+    --signal:       #E0A11B;   /* amber, open-station ring */
     --ink:          #211B33;
     --ink-soft:     #635C7A;
     --paper:        #F3F1F8;
@@ -63,10 +63,10 @@
   /* ---- header / hero ---- */
   .hero { padding: 64px 0 40px; border-bottom: 1px solid var(--rule); }
   .hero h1 {
-    font-size: clamp(34px, 6vw, 62px);
+    font-size: clamp(14px, 4.3vw, 44px);
     letter-spacing: -0.02em;
     margin: 0 0 18px;
-    max-width: 16ch;
+    white-space: nowrap;
   }
   .hero .lede {
     font-size: clamp(18px, 2.4vw, 22px);
@@ -102,6 +102,7 @@
   .dot.s2 { background: var(--surface); border: 2px dashed var(--purple-light); }
   .dot.s3 { background: var(--surface); border: 2px dashed var(--purple-light); opacity: .58; }
   .corridor-src { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--ink-soft); margin-top: 12px; }
+  .policy-body { font-size: 17px; line-height: 1.7; max-width: 68ch; margin: 0 0 16px; color: var(--ink); }
   .corridor-src a { color: var(--purple); }
 
   /* ---- data readout strip ---- */
@@ -173,11 +174,25 @@
 
 <header class="hero">
   <div class="wrap">
-    <p class="eyebrow">Field Survey, Los Angeles</p>
     <h1>Vacant parcels along the D&nbsp;Line extension.</h1>
-    <p class="lede">A walking survey of vacant and underutilized land within the Wilshire corridor, mapped parcel by parcel as the subway pushes west.</p>
+    <p class="lede">With Los Angeles struggling to approve the housing it needs, I conducted a survey of under-utilized properties around the new D&nbsp;Line extension.</p>
 
-    <!-- SIGNATURE: the corridor itself, drawn as a transit line. Filled dots = new extension stations. -->
+  </div>
+</header>
+
+<section id="map-section">
+  <div class="wrap">
+    <div id="map"></div>
+  </div>
+</section>
+
+<section id="corridor-section">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">The line</p>
+      <h2>The D&nbsp;Line extension, west across the corridor</h2>
+      <p>The survey follows this alignment: three existing stations, three that opened in May 2026, and four more under construction through 2027.</p>
+    </div>
     <div class="corridor" aria-hidden="true">
       <svg viewBox="0 0 960 132" preserveAspectRatio="xMinYMid meet" role="img">
         <g class="track"></g>
@@ -191,75 +206,48 @@
       <span><i class="dot s3"></i> Section 3 (Fall 2027)</span>
     </div>
     <p class="corridor-src">Station status and forecasted opening dates: <a href="https://www.metro.net/documents/2025/11/d-line-subway-extension-2025.pdf" target="_blank" rel="noopener">LA Metro, D Line Subway Extension fact sheet</a> (Nov 2025).</p>
-
-    <!-- DATA READOUT, pulled live from your parcel data below -->
-    <div class="readout" id="readout"></div>
-  </div>
-</header>
-
-<section id="map-section">
-  <div class="wrap">
-    <div class="section-head">
-      <p class="eyebrow">01 / The map</p>
-      <h2>Every surveyed parcel, on the line</h2>
-      <p>Amber markers are the surveyed parcels, the vacant and underused lots. The teal-green dots are the <span id="photo-count">&hellip;</span> geotagged field photos; click any one to see the picture. Purple markers are the D&nbsp;Line stations, for reference. Use the toggle at the map&rsquo;s top-right corner to turn each layer on or off.</p>
-    </div>
-    <div id="map"></div>
   </div>
 </section>
 
-<section id="table-section">
+<section id="policy-section">
   <div class="wrap">
     <div class="section-head">
-      <p class="eyebrow">02 / The data</p>
-      <h2>The survey, as a table</h2>
-      <p>Click any column heading to sort. This is the same dataset that draws the map: one source, two views.</p>
+      <p class="eyebrow">Why it matters</p>
+      <h2>Density is coming to this corridor, on one timeline or another</h2>
     </div>
-    <div class="table-scroll">
-      <table id="parcel-table">
-        <thead>
-          <tr>
-            <th data-key="address" data-type="str">Address / location</th>
-            <th data-key="apn" data-type="str">APN</th>
-            <th data-key="size_sqft" data-type="num">Lot size (sq ft)</th>
-            <th data-key="zoning" data-type="str">Zoning</th>
-            <th data-key="status" data-type="str">Status</th>
-            <th data-key="notes" data-type="str">Notes</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
+    <p class="policy-body">In March 2026, the Los Angeles City Council voted to delay SB&nbsp;79, the state law that would otherwise allow six- to nine-story housing near major transit stops, by upzoning 55 lower-density areas on the city&rsquo;s own, lighter terms: buildings of four to sixteen units, up to four stories. The delay runs until 2030, when SB&nbsp;79 is still set to take effect.</p>
+    <p class="policy-body">In the meantime, city incentives such as the Opportunity Corridor Transition Area continue to encourage smaller multifamily housing near stations. So the under-utilized parcels in this survey sit in a corridor where denser, transit-oriented housing is being encouraged now and is set to be required by 2030, which is what makes documenting today&rsquo;s vacant and underused lots worthwhile.</p>
+    <p class="corridor-src">Policy background: Los Angeles Times, &ldquo;Four-story buildings allowed in some single-family zones under L.A.&rsquo;s plan to delay SB 79&rdquo; (March 24, 2026).</p>
   </div>
 </section>
 
 <section id="method-section">
   <div class="wrap">
     <div class="section-head">
-      <p class="eyebrow">03 / How it was done</p>
+      <p class="eyebrow">How it was done</p>
       <h2>Methodology</h2>
-      <p>A transparent record of how each parcel entered the dataset, so the numbers can be trusted and reproduced.</p>
+      <p>A transparent record of how properties entered the survey, so it can be understood and built on.</p>
     </div>
     <div class="grid2">
       <div class="card">
         <div class="step">Field</div>
-        <h3>Walked the corridor</h3>
-        <p>Each block within the survey boundary was visited on foot, with vacant lots, vacant buildings, surface parking, and visibly underused parcels logged by address and coordinates. <em>Edit this with your real method.</em></p>
+        <h3>Rode the corridor by bike</h3>
+        <p>I biked the corridor around the D&nbsp;Line extension, stopping to photograph any property showing a clear underuse signal: a vacant lot, a vacancy or for-lease sign, surface parking, or a visibly empty or abandoned building. Each photo carries GPS coordinates.</p>
       </div>
       <div class="card">
         <div class="step">Records</div>
         <h3>Cross-checked the data</h3>
-        <p>Field observations were matched against county assessor parcel numbers (APNs) and zoning so each entry is verifiable. <em>Edit this with your real sources.</em></p>
+        <p>Photographed properties can be matched against county assessor parcel numbers (APNs) and zoning, so individual sites are verifiable against public records.</p>
       </div>
       <div class="card">
         <div class="step">Boundary</div>
         <h3>Defined the study area</h3>
-        <p>The survey covers parcels within a set walking distance of D Line extension stations. <em>State your exact boundary and date range here.</em></p>
+        <p>The survey follows the D&nbsp;Line extension corridor, concentrating on the area around the new and planned stations where transit-oriented housing policy applies.</p>
       </div>
       <div class="card">
         <div class="step">Limits</div>
-        <h3>What this is and isn't</h3>
-        <p>A point-in-time field survey, not a legal or appraisal record. Status reflects observation on the survey date. <em>Adjust as needed.</em></p>
+        <h3>What this is and isn&rsquo;t</h3>
+        <p>A point-in-time field survey based on visible signals from the street, not a legal, appraisal, or exhaustive parcel record. It captures what looked underused on the survey date, not every vacant parcel in the corridor.</p>
       </div>
     </div>
   </div>
@@ -320,20 +308,8 @@ const REPO_URL   = "https://github.com/tedmccormick/D_Line_Extension_Vacant_Parc
    Below this line you generally don't need to edit anything.
    ========================================================================= */
 
-// ---- data readout (auto-computed) ----
+// ---- helper ----
 const fmt = n => n.toLocaleString("en-US");
-const totalSqft = PARCELS.reduce((s,p) => s + (Number(p.size_sqft)||0), 0);
-const acres = (totalSqft / 43560).toFixed(1);
-const statuses = new Set(PARCELS.map(p => p.status)).size;
-const readoutData = [
-  { num: PARCELS.length, lbl: "Parcels surveyed" },
-  { num: fmt(totalSqft),  lbl: "Total square feet" },
-  { num: acres,           lbl: "Acres of land" },
-  { num: statuses,        lbl: "Status categories" }
-];
-document.getElementById("readout").innerHTML = readoutData.map(d =>
-  `<div class="cell"><div class="num">${d.num}</div><div class="lbl">${d.lbl}</div></div>`
-).join("");
 
 // ---- corridor signature (header SVG) ----
 (function buildCorridor(){
@@ -411,44 +387,41 @@ map.on("click", () => map.scrollWheelZoom.enable());
 map.createPane("photos");
 map.getPane("photos").style.zIndex = 390;   // below the default overlay pane (400)
 
+// zones sit at the very bottom (translucent fills under every marker); the line just above them
+map.createPane("zones");
+map.getPane("zones").style.zIndex = 350;
+map.createPane("dline");
+map.getPane("dline").style.zIndex = 360;
+
 // ---- toggleable layer groups ----
-const stationLayer = L.layerGroup().addTo(map);
-const parcelLayer  = L.layerGroup().addTo(map);
-const photoLayer   = L.layerGroup().addTo(map);
+const newStationLayer  = L.layerGroup().addTo(map);   // extension: La Brea, Fairfax, La Cienega + future
+const origStationLayer = L.layerGroup().addTo(map);   // original: Vermont, Normandie, Western
+const photoLayer       = L.layerGroup().addTo(map);
+const dlineLayer       = L.layerGroup().addTo(map);   // D Line extension line
 
 // station reference dots
 STATIONS.forEach(s => {
-  let style, note;
+  let style, note, group;
   if (s.status === "open") {
     style = { radius: 7, color: "#E0A11B", weight: 3, fillColor: "#7B3FA0", fillOpacity: 1 };
     note  = ", opened " + (s.opens || "May 2026");
+    group = newStationLayer;
   } else if (s.status === "future") {
     style = { radius: 5, color: "#A45FC4", weight: 2, fillColor: "#A45FC4", fillOpacity: 0.25, dashArray: "2,3" };
     note  = ", opening " + (s.opens || "2027");
+    group = newStationLayer;
   } else {
     style = { radius: 5, color: "#7B3FA0", weight: 2, fillColor: "#FFFFFF", fillOpacity: 1 };
-    note  = "";
+    note  = " (original line)";
+    group = origStationLayer;
   }
   L.circleMarker([s.lat, s.lng], style)
     .bindTooltip(s.name + note, { direction: "top" })
-    .addTo(stationLayer);
+    .addTo(group);
 });
 
-// parcels (amber)
+// parcel layer removed for now (was placeholder sample data with false positives)
 const bounds = [];
-PARCELS.forEach(p => {
-  bounds.push([p.lat, p.lng]);
-  L.circleMarker([p.lat, p.lng], {
-    radius: 9, color: "#B97E0E", weight: 2, fillColor: "#E0A11B", fillOpacity: 0.9
-  }).bindPopup(
-    `<div class="pop-addr">${p.address}</div>
-     <div class="pop-row">APN ${p.apn}</div>
-     <div class="pop-row">${fmt(p.size_sqft)} sq ft, ${p.zoning}</div>
-     <span class="pop-status">${p.status}</span>
-     <div class="pop-row" style="margin-top:8px;color:#211B33;">${p.notes}</div>`
-  ).addTo(parcelLayer);
-});
-if (bounds.length) map.fitBounds(bounds, { padding: [60, 60], maxZoom: 14 });
 
 // ---- survey photos (loaded from photos.csv, generated by exiftool) ----
 // CSV columns: SourceFile, FileName, GPSLatitude, GPSLongitude
@@ -487,44 +460,26 @@ fetch("photos.csv")
     console.warn("Photo layer not loaded:", err.message);
   });
 
+// ---- D Line extension alignment (line, loaded from dline_extension.geojson) ----
+fetch("dline_extension.geojson")
+  .then(r => { if (!r.ok) throw new Error("dline_extension.geojson not found (" + r.status + ")"); return r.json(); })
+  .then(geo => {
+    L.geoJSON(geo, {
+      pane: "dline",
+      style: { color: "#7B3FA0", weight: 4, opacity: 0.9 }
+    }).bindPopup("D&nbsp;Line extension alignment").addTo(dlineLayer);
+  })
+  .catch(err => console.warn("D Line layer not loaded:", err.message));
+
 // ---- layer toggle (top-right) ----
 L.control.layers(null, {
-  "Survey photos": photoLayer,
-  "Vacant lots":   parcelLayer,
-  "Stations":      stationLayer
+  "Survey photos":            photoLayer,
+  "New extension stations":   newStationLayer,
+  "Original D Line stations": origStationLayer,
+  "D Line extension (line)":  dlineLayer
 }, { collapsed: false }).addTo(map);
 
-// ---- table (sortable) ----
-const tbody = document.querySelector("#parcel-table tbody");
-function renderRows(rows){
-  tbody.innerHTML = rows.map(p => `
-    <tr>
-      <td>${p.address}</td>
-      <td class="mono">${p.apn}</td>
-      <td class="mono">${fmt(p.size_sqft)}</td>
-      <td><span class="tag">${p.zoning}</span></td>
-      <td>${p.status}</td>
-      <td>${p.notes}</td>
-    </tr>`).join("");
-}
-renderRows(PARCELS);
-
-let sortState = { key: null, dir: 1 };
-document.querySelectorAll("#parcel-table thead th").forEach(th => {
-  th.addEventListener("click", () => {
-    const key = th.dataset.key, type = th.dataset.type;
-    sortState.dir = (sortState.key === key) ? -sortState.dir : 1;
-    sortState.key = key;
-    const sorted = [...PARCELS].sort((a,b) => {
-      let va = a[key], vb = b[key];
-      if (type === "num") { va = Number(va); vb = Number(vb); return (va - vb) * sortState.dir; }
-      return String(va).localeCompare(String(vb)) * sortState.dir;
-    });
-    document.querySelectorAll("#parcel-table thead th").forEach(h => h.removeAttribute("aria-sort"));
-    th.setAttribute("aria-sort", sortState.dir === 1 ? "ascending" : "descending");
-    renderRows(sorted);
-  });
-});
+// (data table removed for now: it displayed the same placeholder sample parcels)
 </script>
 </body>
 </html>
