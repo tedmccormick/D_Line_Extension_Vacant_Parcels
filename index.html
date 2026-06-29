@@ -128,6 +128,20 @@
     .media-row.port > figure.shot, .media-row.land > figure.shot { width: 100%; max-width: 340px; }
     .media-row.port > .policy-body, .media-row.land > .policy-body { max-width: none; }
   }
+  /* ---- historical scene-setter figure ---- */
+  .scene-figure { margin: 24px auto 32px; max-width: 440px; }
+  .scene-figure img { display: block; width: 100%; height: auto; border-radius: 8px; background: var(--rule); }
+  .scene-figure figcaption { margin-top: 10px; font-size: 13px; line-height: 1.55; color: var(--ink-soft); }
+  .scene-figure figcaption a { color: #6B2E8F; text-decoration: underline; text-underline-offset: 2px; }
+  /* ---- two-column backstory header: image left 2/5, title right 3/5 ---- */
+  .backstory-head { display: flex; gap: 34px; align-items: center; margin: 26px 0 24px; }
+  .backstory-head .scene-figure { flex: 0 0 40%; max-width: none; margin: 0; }
+  .backstory-head .section-head { flex: 1 1 auto; max-width: none; margin: 0; }
+  .backstory-head .section-head h2 { margin: 0; }
+  @media (max-width: 720px) {
+    .backstory-head { flex-direction: column; align-items: flex-start; gap: 16px; }
+    .backstory-head .scene-figure { flex: 0 0 auto; width: 100%; max-width: 440px; }
+  }
   .hero .lede a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
   .corridor-src a { color: var(--purple); }
 
@@ -148,6 +162,8 @@
   /* ---- map ---- */
   #map { height: 520px; border-radius: 14px; border: 1px solid var(--rule); }
   .leaflet-popup-content { font-family: 'Public Sans', sans-serif; }
+  .pop-img { display: block; width: 100%; max-width: 240px; max-height: 240px; object-fit: cover; border-radius: 6px; }
+  .pop-cap { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--ink-soft); margin-top: 5px; word-break: break-all; }
   .pop-addr { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 15px; color: var(--ink); }
   .pop-row { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--ink-soft); margin-top: 4px; }
   .pop-status { display: inline-block; margin-top: 8px; padding: 2px 9px; border-radius: 999px;
@@ -218,9 +234,15 @@
 <section id="corridor-section">
   <div class="wrap">
     <p class="policy-body">The D&nbsp;Line subway extension opened in May 2026, Los Angeles&rsquo;s <a href="https://www.pbssocal.org/kcet-50th-anniversary/june-2000-metro-red-line-subway-completed-to-north-hollywood" target="_blank" rel="noopener">first new heavy rail in 26 years</a> and a hard-won win over <a href="https://laist.com/news/wilshire-subway-11" target="_blank" rel="noopener">the NIMBY forces</a> that fight density. Even with the City Council voting to <a href="https://laist.com/brief/news/housing-homelessness/state-law-puts-more-homes-near-train-stops-if-la-wants-to-delay-that-it-must-pick-areas-to-upzone" target="_blank" rel="noopener">delay SB&nbsp;79</a> (the law legalizing taller housing near transit) for four more years, the case is simple: L.A. needs homes, and with <a href="https://laist.com/news/housing-homelessness/los-angeles-zoning-planning-department-recommendation-recap" target="_blank" rel="noopener">roughly three-quarters of the city&rsquo;s residential land zoned for single-family houses</a>, infill along transit corridors is one of the few places left to build them.</p>
-    <div class="section-head">
-      <p class="eyebrow">Backstory</p>
-      <h2>The line that almost never ran down Wilshire</h2>
+    <div class="backstory-head">
+      <figure class="scene-figure">
+        <img src="1280px-Donkeys_grazing_at_the_Oil_Lake.jpg" alt="Donkeys grazing beside an oil lake near the La Brea tar pits in the 1910s, with oil derricks and the Hollywood Hills behind." loading="lazy" />
+        <figcaption>Donkeys graze at the &ldquo;Oil Lake&rdquo; by the La Brea tar pits in the 1910s. The same oil and gas that seeps up across this side of L.A. is what later pooled as methane and, in 1985, exploded near Fairfax. Photo: Natural History Museum of Los Angeles, via <a href="https://commons.wikimedia.org/wiki/File:Donkeys_grazing_at_the_Oil_Lake.jpg" target="_blank" rel="noopener">Wikimedia Commons</a> (public domain).</figcaption>
+      </figure>
+      <div class="section-head">
+        <p class="eyebrow">Backstory</p>
+        <h2>How Hollywood History<br>Stopped the Subway</h2>
+      </div>
     </div>
     <p class="policy-body">This subway was meant to run down Wilshire decades ago. The original plan sent it west to Fairfax and then north into the San Fernando Valley, until March 1985, when methane rising from the oil field beneath the Fairfax district exploded at a Ross Dress for Less near 3rd and Fairfax. Congressman Henry Waxman, whose district covered the area and whose constituents opposed the subway, used the blast to win a federal ban on tunneling through a Mid-Wilshire &ldquo;methane zone.&rdquo;</p>
     <p class="policy-body">The line was rerouted north up Vermont Avenue instead, and the Wilshire branch stalled at Western for a generation, the tangled saga Ethan Elkind tells in his book <a href="https://www.ucpress.edu/book/9780520278271/railtown" target="_blank" rel="noopener"><em>Railtown</em></a>. Waxman finally championed lifting his own ban in 2007, once engineers showed the tunneling could be done safely. Construction began in 2014, and in May 2026 trains ran beneath Wilshire west of Western for the first time, the corridor mapped above.</p>
@@ -336,6 +358,21 @@ map.getPane("dline").style.zIndex = 360;
 // ---- toggleable layer groups ----
 const photoLayer  = L.layerGroup().addTo(map);
 
+// Photo popups hold a lazy-loaded image, so their height is unknown when they
+// first open and Leaflet's auto-pan under-shoots, letting a near-top popup spill
+// off the top of the map. Re-run the pan once the image has loaded and its real
+// height is known; the generous top padding then drops the view enough to fit it.
+map.on("popupopen", function (e) {
+  var node = e.popup._contentNode;
+  if (!node) return;
+  var img = node.querySelector("img.pop-img");
+  if (img && !img.complete) {
+    var refit = function () { if (e.popup._map) e.popup._adjustPan(); };
+    img.addEventListener("load", refit, { once: true });
+    img.addEventListener("error", refit, { once: true });
+  }
+});
+
 // station reference dots
 const stationStyle = {
   spur:        { radius: 7, color: "#7B3FA0", weight: 3, fillColor: "#FFFFFF", fillOpacity: 1 },  // white center, purple rim
@@ -371,7 +408,7 @@ fetch("photos.csv")
       }).bindPopup(
         `<img class="pop-img" src="${src}" loading="lazy" alt="${name}" />
          <div class="pop-cap">${name}</div>`,
-        { maxWidth: 260 }
+        { maxWidth: 260, maxHeight: 300, autoPanPaddingTopLeft: L.point(24, 72), autoPanPaddingBottomRight: L.point(24, 24) }
       ).addTo(photoLayer);
     });
     const cnt = document.getElementById("photo-count");
