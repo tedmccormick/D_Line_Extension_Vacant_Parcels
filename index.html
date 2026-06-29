@@ -61,7 +61,7 @@
   a { color: var(--purple); }
 
   /* ---- header / hero ---- */
-  .hero { padding: 64px 0 40px; border-bottom: 1px solid var(--rule); }
+  .hero { padding: 64px 0 40px; border-bottom: 1px solid var(--rule); text-align: center; }
   .hero h1 {
     font-size: clamp(14px, 4.3vw, 44px);
     letter-spacing: -0.02em;
@@ -71,8 +71,8 @@
   .hero .lede {
     font-size: clamp(18px, 2.4vw, 22px);
     color: var(--ink-soft);
-    max-width: 56ch;
-    margin: 0;
+    max-width: 70%;
+    margin: 0 auto;
     text-wrap: balance;
   }
 
@@ -112,6 +112,22 @@
   .photo-figure figcaption { margin-top: 12px; font-size: 15px; line-height: 1.65; color: var(--ink-soft); max-width: 68ch; }
   .photo-figure figcaption b { color: var(--ink); font-weight: 600; }
   .photo-figure figcaption a { color: #6B2E8F; text-decoration: underline; text-underline-offset: 2px; }
+  /* ---- staggered survey shots ---- */
+  .media-row { display: flex; gap: 30px; align-items: flex-start; margin: 10px 0 30px; }
+  .media-row.imgright { flex-direction: row-reverse; }
+  .media-row > figure.shot { flex: 0 0 auto; margin: 0; }
+  .media-row > figure.shot img { display: block; width: 100%; height: auto; border-radius: 8px; background: var(--rule); }
+  .media-row > figure.shot figcaption { margin-top: 8px; font-size: 13px; line-height: 1.5; color: var(--ink-soft); }
+  .media-row.port > figure.shot { width: 224px; }
+  .media-row.land > figure.shot { width: 470px; }
+  .media-row > .policy-body { flex: 1 1 auto; min-width: 0; margin: 0; }
+  .media-row.port > .policy-body { max-width: 54ch; }
+  .media-row.land > .policy-body { max-width: 33ch; }
+  @media (max-width: 720px) {
+    .media-row, .media-row.imgright { flex-direction: column; gap: 14px; }
+    .media-row.port > figure.shot, .media-row.land > figure.shot { width: 100%; max-width: 340px; }
+    .media-row.port > .policy-body, .media-row.land > .policy-body { max-width: none; }
+  }
   .hero .lede a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
   .corridor-src a { color: var(--purple); }
 
@@ -187,7 +203,7 @@
 <header class="hero">
   <div class="wrap">
     <h1>Vacant parcels along the D&nbsp;Line extension.</h1>
-    <p class="lede">Before the new D&nbsp;Line subway extension opened in May, I biked the corridor to map the vacant lots and underused buildings around it that new incentives could turn into high-density housing. Click any green dot to see one.</p>
+    <p class="lede">Before the new D&nbsp;Line subway extension <a href="https://www.youtube.com/watch?v=QDSeBh9Y-IE" target="_blank" rel="noopener">opened in May</a>, I biked the corridor to map the vacant lots and underused buildings around it that <a href="https://planning.lacity.gov/plans-policies/transit-oriented-communities-incentive-program" target="_blank" rel="noopener">new incentives</a> could turn into high-density housing. Click any green dot to see one.</p>
 
   </div>
 </header>
@@ -208,7 +224,10 @@
     </div>
     <p class="policy-body">This subway was meant to run down Wilshire decades ago. The original plan sent it west to Fairfax and then north into the San Fernando Valley, until March 1985, when methane rising from the oil field beneath the Fairfax district exploded at a Ross Dress for Less near 3rd and Fairfax. Congressman Henry Waxman, whose district covered the area and whose constituents opposed the subway, used the blast to win a federal ban on tunneling through a Mid-Wilshire &ldquo;methane zone.&rdquo;</p>
     <p class="policy-body">The line was rerouted north up Vermont Avenue instead, and the Wilshire branch stalled at Western for a generation, the tangled saga Ethan Elkind tells in his book <a href="https://www.ucpress.edu/book/9780520278271/railtown" target="_blank" rel="noopener"><em>Railtown</em></a>. Waxman finally championed lifting his own ban in 2007, once engineers showed the tunneling could be done safely. Construction began in 2014, and in May 2026 trains ran beneath Wilshire west of Western for the first time, the corridor mapped above.</p>
-    <p class="policy-body"><strong>How I found them:</strong> I biked the corridor around the new stations, photographing every clear sign of underuse (a vacant lot, a for-lease or vacancy sign, surface parking, an empty or shuttered building) and tagged each photo with GPS. It is a point-in-time street survey, not a legal or exhaustive parcel record, but every site can be checked against county assessor parcel numbers and zoning.</p>
+    <div class="media-row port">
+      <figure class="shot"><img src="for_lease.png" alt="A for-lease sign on a building in the survey area." loading="lazy" /><figcaption>A for-lease sign, one of the underuse signals logged on the ride.</figcaption></figure>
+      <p class="policy-body"><strong>How I found them:</strong> I biked the corridor around the new stations, photographing every clear sign of underuse (a vacant lot, a for-lease or vacancy sign, surface parking, an empty or shuttered building) and tagged each photo with GPS. It is a point-in-time street survey, not a legal or exhaustive parcel record, but every site can be checked against county assessor parcel numbers and zoning.</p>
+    </div>
     <figure class="photo-figure">
       <img src="IMG_0363copy2.jpeg" alt="A fenced, empty lot topped with barbed wire at 250 N Wilton Place, where a house once stood." loading="lazy" />
       <figcaption><b>A single-family home was demolished here years ago.</b> The lot at 250&nbsp;N&nbsp;Wilton&nbsp;Place reads like a permit trail: small repairs (one permit was just to fix a sink), then a sale, then demolition, and then nothing. It has sat empty since, growing weeds and drawing neighbor complaints about dumped trash, which may be what put up the fence and the barbed wire. The pattern is common. An empty lot is cheap to hold: with no building to assess, the property tax on bare land runs lower than on the same lot with even a condemned house, so an owner can sit and wait for the right offer while the housing that could stand here never gets built. A new subway stop is exactly the kind of event that finally makes building pencil out.</figcaption>
@@ -221,9 +240,18 @@
     <div class="section-head">
       <h2>More subway, more housing</h2>
     </div>
-    <p class="policy-body">Not all transit counts the same. Los Angeles has opened plenty of new rail since 2000, the Expo Line to Santa Monica, the K&nbsp;Line through Crenshaw, the Regional Connector downtown, but every mile of it was light rail. The D&nbsp;Line extension is the region&rsquo;s first new heavy-rail subway in that whole stretch, and the distinction pays off here: <a href="https://www.hcd.ca.gov/planning-and-research/sb79-tod" target="_blank" rel="noopener">SB&nbsp;79</a> (effective July 2026) saves its tallest allowances, buildings up to about nine stories, for stops on heavy rail and the highest-frequency transit. These Wilshire stations sit in that top tier.</p>
-    <p class="policy-body">SB&nbsp;79 is not the only lever. The State Density Bonus Law trades extra size for affordable units, AB&nbsp;2097 scrapped parking minimums near transit, and Los Angeles layers its own <a href="https://planning.lacity.gov/plans-policies/transit-oriented-communities-incentive-program" target="_blank" rel="noopener">Transit Oriented Communities</a> program on top, all of it pushing housing toward stops like these.</p>
-    <p class="policy-body">It is not friction-free. In March 2026 the City Council voted to delay SB&nbsp;79 until 2030, upzoning 55 areas on lighter terms instead. But the delay is temporary, the incentives keep steering housing toward transit, and these underused lots sit right where the next wave of building is pointed.</p>
+    <div class="media-row port imgright">
+      <figure class="shot"><img src="crane_construction.jpg" alt="A construction crane over new building near the corridor." loading="lazy" /><figcaption>New construction rising along the corridor.</figcaption></figure>
+      <p class="policy-body">Not all transit counts the same. Los Angeles has opened plenty of new rail since 2000, the Expo Line to Santa Monica, the K&nbsp;Line through Crenshaw, the Regional Connector downtown, but every mile of it was light rail. The D&nbsp;Line extension is the region&rsquo;s first new heavy-rail subway in that whole stretch, and the distinction pays off here: <a href="https://www.hcd.ca.gov/planning-and-research/sb79-tod" target="_blank" rel="noopener">SB&nbsp;79</a> (effective July 2026) saves its tallest allowances, buildings up to about nine stories, for stops on heavy rail and the highest-frequency transit. These Wilshire stations sit in that top tier.</p>
+    </div>
+    <div class="media-row land">
+      <figure class="shot"><img src="empty_lot.jpg" alt="A vacant, fenced lot along the corridor." loading="lazy" /><figcaption>A vacant lot within a short walk of a station.</figcaption></figure>
+      <p class="policy-body">SB&nbsp;79 is not the only lever. The State Density Bonus Law trades extra size for affordable units, AB&nbsp;2097 scrapped parking minimums near transit, and Los Angeles layers its own <a href="https://planning.lacity.gov/plans-policies/transit-oriented-communities-incentive-program" target="_blank" rel="noopener">Transit Oriented Communities</a> program on top, all of it pushing housing toward stops like these.</p>
+    </div>
+    <div class="media-row land">
+      <figure class="shot"><img src="empty_lot2.jpg" alt="Another empty parcel near the line." loading="lazy" /><figcaption>Another underused parcel along the corridor.</figcaption></figure>
+      <p class="policy-body">It is not friction-free. In March 2026 the City Council voted to delay SB&nbsp;79 until 2030, upzoning 55 areas on lighter terms instead. But the delay is temporary, the incentives keep steering housing toward transit, and these underused lots sit right where the next wave of building is pointed.</p>
+    </div>
     <p class="corridor-src">More on this: <a href="https://laist.com/brief/news/housing-homelessness/state-law-puts-more-homes-near-train-stops-if-la-wants-to-delay-that-it-must-pick-areas-to-upzone" target="_blank" rel="noopener">LAist</a> on L.A.&rsquo;s delay plan; <a href="https://www.youtube.com/watch?v=OimL8T4b4hg" target="_blank" rel="noopener">nandert</a> on the region&rsquo;s transit expansion; and the <a href="https://www.hcd.ca.gov/planning-and-research/sb79-tod" target="_blank" rel="noopener">state&rsquo;s official SB&nbsp;79 page</a>. The council vote was first reported by the Los Angeles Times.</p>
   </div>
 </section>
