@@ -69,9 +69,9 @@
     white-space: nowrap;
   }
   .hero .lede {
-    font-size: clamp(16px, 2vw, 20px);
+    font-size: clamp(15px, 1.85vw, 18px);
     color: var(--ink-soft);
-    max-width: 94%;
+    max-width: 100%;
     margin: 0 auto;
     text-wrap: balance;
   }
@@ -127,6 +127,24 @@
     .media-row, .media-row.imgright { flex-direction: column; gap: 14px; }
     .media-row.port > figure.shot, .media-row.land > figure.shot { width: 100%; max-width: 340px; }
     .media-row.port > .policy-body, .media-row.land > .policy-body { max-width: none; }
+  }
+  /* ---- lead paragraph spans the full map width ---- */
+  .policy-body.wide { max-width: none; }
+  /* ---- right-floated figure: image hugs the right margin, text wraps to its left and under ---- */
+  .fig-right { float: right; width: 44%; max-width: 470px; margin: 6px 0 16px 34px; }
+  .fig-right img { display: block; width: 100%; height: auto; border-radius: 10px; background: var(--rule); }
+  .fig-right figcaption { margin-top: 10px; font-size: 13px; line-height: 1.55; color: var(--ink-soft); }
+  /* policy-section title centered over the column beside the floated photo */
+  #policy-section .section-head { max-width: none; margin: 0 0 14px; }
+  #policy-section .section-head h2 { margin: 0; text-align: center; }
+  #policy-section .media-row { clear: both; }
+  /* methods shot: narrow the text so its height tracks the portrait photo */
+  .media-row.match-h > .policy-body { max-width: 40ch; }
+  /* photo popups forced to open downward (near the top edge) drop the upward tip */
+  .leaflet-popup.popup-below .leaflet-popup-tip-container { display: none; }
+  @media (max-width: 720px) {
+    .fig-right { float: none; width: 100%; max-width: 420px; margin: 8px auto 16px; }
+    .media-row.match-h > .policy-body { max-width: none; }
   }
   /* ---- historical scene-setter: floats left, title + text wrap to its right and under ---- */
   .scene-figure { float: left; width: 40%; max-width: 430px; margin: 4px 32px 14px 0; }
@@ -217,7 +235,7 @@
 <header class="hero">
   <div class="wrap">
     <h1>Vacant parcels along the D&nbsp;Line extension.</h1>
-    <p class="lede">Before the new D&nbsp;Line subway extension <a href="https://www.youtube.com/watch?v=QDSeBh9Y-IE" target="_blank" rel="noopener">opened in May</a>, I biked the corridor to map the vacant lots and underused buildings around it that <a href="https://planning.lacity.gov/plans-policies/transit-oriented-communities-incentive-program" target="_blank" rel="noopener">new incentives</a> could turn into high-density housing. Click any green dot to see one.</p>
+    <p class="lede">Before the new D&nbsp;Line subway extension <a href="https://www.youtube.com/watch?v=QDSeBh9Y-IE" target="_blank" rel="noopener">opened in May</a>, I biked the corridor to map the vacant lots and underused buildings around it that <a href="https://planning.lacity.gov/plans-policies/transit-oriented-communities-incentive-program" target="_blank" rel="noopener">new incentives</a> could turn into high-density housing. Click the green points to see the vacancies.</p>
 
   </div>
 </header>
@@ -230,44 +248,44 @@
 
 <section id="corridor-section">
   <div class="wrap">
-    <p class="policy-body">The D&nbsp;Line subway extension opened in May 2026, Los Angeles&rsquo;s <a href="https://www.pbssocal.org/kcet-50th-anniversary/june-2000-metro-red-line-subway-completed-to-north-hollywood" target="_blank" rel="noopener">first new heavy rail in 26 years</a> and a hard-won win over <a href="https://laist.com/news/wilshire-subway-11" target="_blank" rel="noopener">the NIMBY forces</a> that fight density. Even with the City Council voting to <a href="https://laist.com/brief/news/housing-homelessness/state-law-puts-more-homes-near-train-stops-if-la-wants-to-delay-that-it-must-pick-areas-to-upzone" target="_blank" rel="noopener">delay SB&nbsp;79</a> (the law legalizing taller housing near transit) for four more years, the case is simple: L.A. needs homes, and with <a href="https://laist.com/news/housing-homelessness/los-angeles-zoning-planning-department-recommendation-recap" target="_blank" rel="noopener">roughly three-quarters of the city&rsquo;s residential land zoned for single-family houses</a>, infill along transit corridors is one of the few places left to build them.</p>
+    <p class="policy-body wide">The D&nbsp;Line subway extension opened in May 2026, Los Angeles&rsquo;s <a href="https://www.pbssocal.org/kcet-50th-anniversary/june-2000-metro-red-line-subway-completed-to-north-hollywood" target="_blank" rel="noopener">first new heavy rail in 26 years</a> and a hard-won win over <a href="https://laist.com/news/wilshire-subway-11" target="_blank" rel="noopener">the NIMBY forces</a> that fight density. Even with the City Council voting to <a href="https://laist.com/brief/news/housing-homelessness/state-law-puts-more-homes-near-train-stops-if-la-wants-to-delay-that-it-must-pick-areas-to-upzone" target="_blank" rel="noopener">delay SB&nbsp;79</a> (the law legalizing taller housing near transit) for four more years, the case is simple: L.A. needs homes, and with <a href="https://laist.com/news/housing-homelessness/los-angeles-zoning-planning-department-recommendation-recap" target="_blank" rel="noopener">roughly three-quarters of the city&rsquo;s residential land zoned for single-family houses</a>, infill along transit corridors is one of the few places left to build them.</p>
     <figure class="scene-figure">
       <img src="1280px-Donkeys_grazing_at_the_Oil_Lake.jpg" alt="Donkeys grazing beside an oil lake near the La Brea tar pits in the 1910s, with oil derricks and the Hollywood Hills behind." loading="lazy" />
       <figcaption>Donkeys graze at the &ldquo;Oil Lake&rdquo; by the La Brea tar pits in the 1910s. The same oil and gas that seeps up across this side of L.A. is what later pooled as methane and, in 1985, exploded near Fairfax. Photo: Natural History Museum of Los Angeles, via <a href="https://commons.wikimedia.org/wiki/File:Donkeys_grazing_at_the_Oil_Lake.jpg" target="_blank" rel="noopener">Wikimedia Commons</a> (public domain).</figcaption>
     </figure>
     <div class="section-head">
-      <p class="eyebrow">Backstory</p>
       <h2>How Hollywood History<br>Stopped the Subway</h2>
     </div>
-    <p class="policy-body">This subway was meant to run down Wilshire decades ago. The original plan sent it west to Fairfax and then north into the San Fernando Valley, until March 1985, when methane rising from the oil field beneath the Fairfax district exploded at a Ross Dress for Less near 3rd and Fairfax. Congressman Henry Waxman, whose district covered the area and whose constituents opposed the subway, used the blast to win a federal ban on tunneling through a Mid-Wilshire &ldquo;methane zone.&rdquo;</p>
-    <p class="policy-body">The line was rerouted north up Vermont Avenue instead, and the Wilshire branch stalled at Western for a generation, the tangled saga Ethan Elkind tells in his book <a href="https://www.ucpress.edu/book/9780520278271/railtown" target="_blank" rel="noopener"><em>Railtown</em></a>. Waxman finally championed lifting his own ban in 2007, once engineers showed the tunneling could be done safely. Construction began in 2014, and in May 2026 trains ran beneath Wilshire west of Western for the first time, the corridor mapped above.</p>
-    <div class="media-row port">
-      <figure class="shot"><img src="for_lease.png" alt="A for-lease sign on a building in the survey area." loading="lazy" /><figcaption>A for-lease sign, one of the underuse signals logged on the ride.</figcaption></figure>
-      <p class="policy-body"><strong>How I found them:</strong> I biked the corridor around the new stations, photographing every clear sign of underuse (a vacant lot, a for-lease or vacancy sign, surface parking, an empty or shuttered building) and tagged each photo with GPS. It is a point-in-time street survey, not a legal or exhaustive parcel record, but every site can be checked against county assessor parcel numbers and zoning.</p>
+    <p class="policy-body">This subway was planned to run down Wilshire to Fairfax before heading to the San Fernando Valley, but in March 1985 methane rising from the oil field beneath the Fairfax district exploded at a Ross Dress for Less near 3rd and Fairfax. Congressman Henry Waxman, whose district covered the area and whose constituents opposed the subway, used the blast to win a federal ban on tunneling through a Mid-Wilshire &ldquo;methane zone.&rdquo;</p>
+    <p class="policy-body">The line was rerouted north up Vermont Avenue instead, and the Wilshire branch stalled at Western for a generation, the tangled saga Elkind tells in <a href="https://www.ucpress.edu/book/9780520278271/railtown" target="_blank" rel="noopener"><em>Railtown</em></a>. Waxman finally championed lifting his own ban in 2007, once engineers showed the tunneling could be done safely. Construction began in 2014, and in May 2026 trains ran beneath Wilshire west of Western for the first time, the corridor mapped above.</p>
+    <div class="media-row port imgright match-h">
+      <figure class="shot"><img src="for_lease.png" alt="A for-lease sign on a building in the survey area." loading="lazy" /><figcaption>For lease signs along Wilshire&nbsp;Blvd are a common sight in the &ldquo;Miracle&nbsp;Mile,&rdquo; which <a href="https://beverlypress.com/2026/04/l-a-council-oks-plan-for-miracle-mile-bid/" target="_blank" rel="noopener">is in need of renewal</a>.</figcaption></figure>
+      <p class="policy-body"><strong>Method:</strong> I rode my bike around the new stations, photographing every clear sign of underuse (a vacant lot, a for-lease or vacancy sign, blocked-off surface parking, an empty or shuttered building) and tagged each photo with GPS. It is a point-in-time street survey, not a legal or exhaustive parcel record, but every site can be checked against county assessor parcel numbers and zoning.</p>
     </div>
-    <figure class="photo-figure">
-      <img src="IMG_0363copy2.jpeg" alt="A fenced, empty lot topped with barbed wire at 250 N Wilton Place, where a house once stood." loading="lazy" />
-      <figcaption><b>A single-family home was demolished here years ago.</b> The lot at 250&nbsp;N&nbsp;Wilton&nbsp;Place reads like a permit trail: small repairs (one permit was just to fix a sink), then a sale, then demolition, and then nothing. It has sat empty since, growing weeds and drawing neighbor complaints about dumped trash, which may be what put up the fence and the barbed wire. The pattern is common. An empty lot is cheap to hold: with no building to assess, the property tax on bare land runs lower than on the same lot with even a condemned house, so an owner can sit and wait for the right offer while the housing that could stand here never gets built. A new subway stop is exactly the kind of event that finally makes building pencil out.</figcaption>
+    <figure class="fig-right">
+      <img src="IMG_0363copy2.jpeg" alt="A fenced, empty lot topped with barbed wire where a house once stood." loading="lazy" />
     </figure>
+    <p class="policy-body"><strong>A single-family home was demolished here years ago and the lot now grows grass.</strong> The permit trail left behind tells a typical tale: small repairs (one permit was just to fix a sink), then a sale, then demolition, and then nothing. It has sat empty since, growing weeds and drawing neighbor complaints about dumped trash, which may be what put up the fence and the barbed wire. The pattern is common. An empty lot is cheap to hold: with no building to assess, the property tax on bare land runs lower than on the same lot with even a condemned house, so an owner can sit and wait for the right offer while the housing that could stand here never gets built. A new subway stop is exactly the kind of event that finally makes building pencil out.</p>
   </div>
 </section>
 
 <section id="policy-section">
   <div class="wrap">
+    <figure class="fig-right">
+      <img src="IMG_2131copy.jpg" alt="A construction crane over new building near the corridor." loading="lazy" />
+      <figcaption>New construction rising along the corridor.</figcaption>
+    </figure>
     <div class="section-head">
       <h2>More subway, more housing</h2>
     </div>
-    <div class="media-row port imgright">
-      <figure class="shot"><img src="crane_construction.jpg" alt="A construction crane over new building near the corridor." loading="lazy" /><figcaption>New construction rising along the corridor.</figcaption></figure>
-      <p class="policy-body">Not all transit counts the same. Los Angeles has opened plenty of new rail since 2000, the Expo Line to Santa Monica, the K&nbsp;Line through Crenshaw, the Regional Connector downtown, but every mile of it was light rail. The D&nbsp;Line extension is the region&rsquo;s first new heavy-rail subway in that whole stretch, and the distinction pays off here: <a href="https://www.hcd.ca.gov/planning-and-research/sb79-tod" target="_blank" rel="noopener">SB&nbsp;79</a> (effective July 2026) saves its tallest allowances, buildings up to about nine stories, for stops on heavy rail and the highest-frequency transit. These Wilshire stations sit in that top tier.</p>
-    </div>
+    <p class="policy-body">Not all transit counts the same. Los Angeles has opened plenty of new rail since 2000, the Expo Line to Santa Monica, the K&nbsp;Line through Crenshaw, the Regional Connector downtown, but every mile of it was light rail. The D&nbsp;Line extension is the region&rsquo;s first new heavy-rail subway in that whole stretch, and the distinction pays off here: <a href="https://www.hcd.ca.gov/planning-and-research/sb79-tod" target="_blank" rel="noopener">SB&nbsp;79</a> (effective July 2026) saves its tallest allowances, buildings up to about nine stories, for stops on heavy rail and the highest-frequency transit. These Wilshire stations sit in that top tier.</p>
     <div class="media-row land">
       <figure class="shot"><img src="empty_lot.jpg" alt="A vacant, fenced lot along the corridor." loading="lazy" /><figcaption>A vacant lot within a short walk of a station.</figcaption></figure>
-      <p class="policy-body">SB&nbsp;79 is not the only lever. The State Density Bonus Law trades extra size for affordable units, AB&nbsp;2097 scrapped parking minimums near transit, and Los Angeles layers its own <a href="https://planning.lacity.gov/plans-policies/transit-oriented-communities-incentive-program" target="_blank" rel="noopener">Transit Oriented Communities</a> program on top, all of it pushing housing toward stops like these.</p>
+      <p class="policy-body">SB&nbsp;79 is not the only building incentive. The State Density Bonus Law trades extra size for affordable units, AB&nbsp;2097 scrapped parking minimums near transit, and Los Angeles layers its own <a href="https://planning.lacity.gov/plans-policies/transit-oriented-communities-incentive-program" target="_blank" rel="noopener">Transit Oriented Communities</a> program on top, all of it pushing housing towards empty parcels like these.</p>
     </div>
     <div class="media-row land">
       <figure class="shot"><img src="empty_lot2.jpg" alt="Another empty parcel near the line." loading="lazy" /><figcaption>Another underused parcel along the corridor.</figcaption></figure>
-      <p class="policy-body">It is not friction-free. In March 2026 the City Council voted to delay SB&nbsp;79 until 2030, upzoning 55 areas on lighter terms instead. But the delay is temporary, the incentives keep steering housing toward transit, and these underused lots sit right where the next wave of building is pointed.</p>
+      <p class="policy-body">In March 2026 the City Council voted to delay SB&nbsp;79 until 2030, upzoning 55 areas on lighter terms instead. In the meantime, lots like these rack up complaints to the city about trash, weeds, and trespassing, which bring fences and sometimes a solar-powered surveillance trailer like this one, typically an <a href="https://en.wikipedia.org/wiki/LiveView_Technologies" target="_blank" rel="noopener">LVT unit</a> that leases for roughly $3,000 a month.</p>
     </div>
     <p class="corridor-src">More on this: <a href="https://laist.com/brief/news/housing-homelessness/state-law-puts-more-homes-near-train-stops-if-la-wants-to-delay-that-it-must-pick-areas-to-upzone" target="_blank" rel="noopener">LAist</a> on L.A.&rsquo;s delay plan; <a href="https://www.youtube.com/watch?v=OimL8T4b4hg" target="_blank" rel="noopener">nandert</a> on the region&rsquo;s transit expansion; and the <a href="https://www.hcd.ca.gov/planning-and-research/sb79-tod" target="_blank" rel="noopener">state&rsquo;s official SB&nbsp;79 page</a>. The council vote was first reported by the Los Angeles Times.</p>
   </div>
@@ -357,14 +375,26 @@ const photoLayer  = L.layerGroup().addTo(map);
 // first open and Leaflet's auto-pan under-shoots, letting a near-top popup spill
 // off the top of the map. Re-run the pan once the image has loaded and its real
 // height is known; the generous top padding then drops the view enough to fit it.
+// Photo popups never pan the map (autoPan is off below). If a marker sits too close
+// to the top for the popup to open upward without clipping, flip it downward instead,
+// so the view stays put.
 map.on("popupopen", function (e) {
-  var node = e.popup._contentNode;
-  if (!node) return;
-  var img = node.querySelector("img.pop-img");
+  var popup = e.popup;
+  function place() {
+    if (!popup._map) return;
+    var pt = map.latLngToContainerPoint(popup.getLatLng());
+    var h = popup._container ? popup._container.offsetHeight : 0;
+    var below = pt.y < (h + 28);            // not enough room above the marker
+    if (popup._container) popup._container.classList.toggle("popup-below", below);
+    popup.options.offset = below ? L.point(0, h + 14) : L.point(0, 7);
+    popup.update();
+  }
+  var img = popup._contentNode && popup._contentNode.querySelector("img.pop-img");
   if (img && !img.complete) {
-    var refit = function () { if (e.popup._map) e.popup._adjustPan(); };
-    img.addEventListener("load", refit, { once: true });
-    img.addEventListener("error", refit, { once: true });
+    img.addEventListener("load", place, { once: true });
+    img.addEventListener("error", place, { once: true });
+  } else {
+    place();
   }
 });
 
@@ -403,7 +433,7 @@ fetch("photos.csv")
       }).bindPopup(
         `<img class="pop-img" src="${src}" loading="lazy" alt="${name}" />
          <div class="pop-cap">${name}</div>`,
-        { maxWidth: 260, maxHeight: 300, autoPanPaddingTopLeft: L.point(24, 72), autoPanPaddingBottomRight: L.point(24, 24) }
+        { maxWidth: 260, maxHeight: 300, autoPan: false }
       ).addTo(photoLayer);
     });
     const cnt = document.getElementById("photo-count");
