@@ -218,9 +218,14 @@
   .leaflet-control-layers-expanded { padding: 6px 12px !important; }
   .leaflet-control-layers-list, .leaflet-control-layers form { margin: 0 !important; padding: 0 !important; }
   .leaflet-control-layers-base, .leaflet-control-layers-separator { display: none !important; }
-  .leaflet-control-layers-overlays { display: flex; flex-direction: column; gap: 3px; }
-  .leaflet-control-layers label { margin: 0 !important; line-height: 1.4; }
-  .leaflet-control-layers label > span { display: flex; align-items: center; }
+  .leaflet-control-layers-overlays { display: flex; flex-direction: column; gap: 4px; }
+  .leaflet-control-layers label { margin: 0 !important; line-height: 1.4; display: flex; }
+  .leaflet-control-layers label > span { flex: 1; display: flex; align-items: center; }
+  .leaflet-control-layers label > span > span { order: 1; flex: 1; display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+  .leaflet-control-layers-selector { order: 2; flex: 0 0 auto; margin: 0 0 0 14px; }
+  .lc-swatch { flex: 0 0 auto; }
+  .lc-dot { width: 11px; height: 11px; border-radius: 50%; border: 1.5px solid; }
+  .lc-line { width: 22px; height: 0; border-top: 4px solid; }
 
   /* ---- table ---- */
   .table-scroll { overflow-x: auto; border: 1px solid var(--rule); border-radius: 14px; background: var(--surface); }
@@ -397,7 +402,7 @@ const fmt = n => n.toLocaleString("en-US");
 })();
 
 // ---- map ----
-const map = L.map("map", { scrollWheelZoom: false }).setView([34.0625, -118.355], 12);
+const map = L.map("map", { scrollWheelZoom: false, zoomControl: false }).setView([34.0625, -118.355], 12);
 L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
   attribution: '&copy; OpenStreetMap &copy; CARTO', maxZoom: 19
 }).addTo(map);
@@ -553,9 +558,20 @@ SECTIONS.forEach(sec => {
 });
 
 // ---- layer toggle (top-left, clear of the B Line in the upper-right) ----
-L.control.layers(null, Object.assign({
-  "Vacancy Survey Photos": photoLayer
-}, sectionOverlays), { collapsed: false, position: "topleft" }).addTo(map);
+// build legend swatches that mirror each layer's real style
+const lineSwatch = st => `<span class="lc-swatch lc-line" style="border-top-color:${st.color}${st.dashArray ? ";border-top-style:dashed" : ""}"></span>`;
+const dotSwatch = (fill, stroke) => `<span class="lc-swatch lc-dot" style="background:${fill};border-color:${stroke}"></span>`;
+
+const legendOverlays = {};
+legendOverlays[dotSwatch("#15D6A2", "#0B8F6C") + "Vacancy Survey Photos"] = photoLayer;
+SECTIONS.forEach(sec => {
+  legendOverlays[lineSwatch(sec.lineStyle) + sec.label] = sectionOverlays[sec.label];
+});
+
+L.control.layers(null, legendOverlays, { collapsed: false, position: "topleft" }).addTo(map);
+
+// zoom buttons sit beneath the layer menu (added after it, so it stacks below)
+L.control.zoom({ position: "topleft" }).addTo(map);
 
 // (data table removed for now: it displayed the same placeholder sample parcels)
 </script>
