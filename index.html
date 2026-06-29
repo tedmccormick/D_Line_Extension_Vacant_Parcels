@@ -484,7 +484,7 @@ fetch("photos.csv")
     const cnt = document.getElementById("photo-count");
     if (cnt) cnt.textContent = pts.length.toLocaleString("en-US");
     // reframe the map to the real surveyed extent (photos + parcels)
-    if (pts.length) map.fitBounds(pts.concat(bounds), { padding: [40, 40], maxZoom: 15 });
+    if (pts.length) map.fitBounds(pts.concat(bounds), { paddingTopLeft: [50, 95], paddingBottomRight: [50, 50], maxZoom: 15 });
   })
   .catch(err => {
     const cnt = document.getElementById("photo-count");
