@@ -141,13 +141,23 @@
   #policy-section .media-row { clear: both; }
   /* medium section heading used for the lot title and "more subway" */
   .lot-head { font-size: clamp(20px, 2.4vw, 26px); font-weight: 650; letter-spacing: -0.01em; line-height: 1.25; color: var(--ink); margin: 0 0 8px; }
+  /* text block with a photo centered vertically beside it */
+  .split { display: flex; gap: 34px; align-items: center; margin: 0 0 30px; }
+  .split-text { flex: 1 1 auto; min-width: 0; }
+  .split-text .policy-body { max-width: none; margin: 0; }
+  .split-text .section-head { margin-bottom: 12px; }
+  .split-fig { flex: 0 0 auto; margin: 0; }
+  .split-fig img { display: block; width: 100%; height: auto; border-radius: 10px; background: var(--rule); }
+  .split-fig figcaption { margin-top: 10px; font-size: 13px; line-height: 1.55; color: var(--ink-soft); }
+  .split-fig.wilton-fig { width: 40%; max-width: 430px; }
+  .split-fig.crane-fig { width: 33%; max-width: 360px; }
   /* extra breathing room before a media row */
   .media-row.spaced { margin-top: 72px; }
   /* methods trio: photo | text | photo, both photos matched to one height */
   .media-row.trio { display: flex; gap: 24px; align-items: flex-start; }
   .media-row.trio > figure.shot { flex: 0 0 auto; margin: 0; }
   .media-row.trio > figure.shot img { display: block; width: auto; height: 260px; border-radius: 8px; background: var(--rule); }
-  .media-row.trio > figure.shot figcaption { margin-top: 8px; font-size: 13px; line-height: 1.5; color: var(--ink-soft); max-width: none; }
+  .media-row.trio > figure.shot figcaption { margin-top: 8px; font-size: 13px; line-height: 1.5; color: var(--ink-soft); max-width: 200px; }
   .media-row.trio > .policy-body { flex: 1 1 auto; min-width: 0; max-width: 40ch; margin: 0; }
   /* methods shot: narrow the text so its height tracks the portrait photo */
   .media-row.match-h > .policy-body { max-width: 40ch; }
@@ -159,6 +169,8 @@
     .media-row.trio { flex-direction: column; gap: 14px; }
     .media-row.trio > figure.shot img { width: 100%; max-width: 340px; height: auto; }
     .media-row.trio > .policy-body { max-width: none; }
+    .split { flex-direction: column; gap: 14px; align-items: stretch; }
+    .split-fig.wilton-fig, .split-fig.crane-fig { width: 100%; max-width: 420px; margin: 0 auto; order: -1; }
   }
   /* ---- historical scene-setter: floats left, title + text wrap to its right and under ---- */
   .scene-figure { float: left; width: 40%; max-width: 430px; margin: 4px 32px 14px 0; }
@@ -203,11 +215,12 @@
 
   /* ---- layer toggle ---- */
   .leaflet-control-layers { background: #ECEEF1; border: 1px solid rgba(0,0,0,0.12); border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.12); }
-  .leaflet-control-layers-expanded { padding: 3px 12px 3px 8px; }
-  .leaflet-control-layers-list { margin: 0; }
-  .leaflet-control-layers label { margin: 1px 0; line-height: 1.5; }
-  .leaflet-control-layers label:first-child { margin-top: 0; }
-  .leaflet-control-layers label:last-child { margin-bottom: 0; }
+  .leaflet-control-layers-expanded { padding: 6px 12px !important; }
+  .leaflet-control-layers-list, .leaflet-control-layers form { margin: 0 !important; padding: 0 !important; }
+  .leaflet-control-layers-base, .leaflet-control-layers-separator { display: none !important; }
+  .leaflet-control-layers-overlays { display: flex; flex-direction: column; gap: 3px; }
+  .leaflet-control-layers label { margin: 0 !important; line-height: 1.4; }
+  .leaflet-control-layers label > span { display: flex; align-items: center; }
 
   /* ---- table ---- */
   .table-scroll { overflow-x: auto; border: 1px solid var(--rule); border-radius: 14px; background: var(--surface); }
@@ -273,7 +286,7 @@
     <p class="policy-body wide" style="margin-bottom: 3.2em;">The D&nbsp;Line subway extension opened in May 2026, Los Angeles&rsquo;s <a href="https://www.pbssocal.org/kcet-50th-anniversary/june-2000-metro-red-line-subway-completed-to-north-hollywood" target="_blank" rel="noopener">first new heavy rail in 26 years</a> and a hard-won win over <a href="https://laist.com/news/wilshire-subway-11" target="_blank" rel="noopener">the NIMBY forces</a> that fight density. Even with the City Council voting to <a href="https://laist.com/brief/news/housing-homelessness/state-law-puts-more-homes-near-train-stops-if-la-wants-to-delay-that-it-must-pick-areas-to-upzone" target="_blank" rel="noopener">delay SB&nbsp;79</a> (the law legalizing taller housing near transit) for four more years, the case is simple: L.A. needs homes, and with <a href="https://laist.com/news/housing-homelessness/los-angeles-zoning-planning-department-recommendation-recap" target="_blank" rel="noopener">roughly three-quarters of the city&rsquo;s residential land zoned for single-family houses</a>, infill along transit corridors is one of the few places left to build them.</p>
     <figure class="scene-figure">
       <img src="1280px-Donkeys_grazing_at_the_Oil_Lake.jpg" alt="Donkeys grazing beside an oil lake near the La Brea tar pits in the 1910s, with oil derricks and the Hollywood Hills behind." loading="lazy" />
-      <figcaption>A donkey grazes at the &ldquo;Oil Lake&rdquo; by the La Brea tar pits in the 1910s. The boom peaked in 1908; by the 1930s the derricks were mostly gone, giving way to Farmers Market and, later, The Grove. Photo: Natural History Museum of Los Angeles, via <a href="https://commons.wikimedia.org/wiki/File:Donkeys_grazing_at_the_Oil_Lake.jpg" target="_blank" rel="noopener">Wikimedia Commons</a> (public domain).</figcaption>
+      <figcaption>A donkey grazes at the &ldquo;Oil Lake&rdquo; by the La Brea tar pits in the 1910s. The boom peaked in 1908, and by the 1930s the wells had <a href="https://blogs.getty.edu/iris/subterranean-l-a-the-urban-oil-fields/" target="_blank" rel="noopener">given way to Farmers Market</a> and, later, The Grove. Photo: Natural History Museum of Los Angeles, via <a href="https://commons.wikimedia.org/wiki/File:Donkeys_grazing_at_the_Oil_Lake.jpg" target="_blank" rel="noopener">Wikimedia Commons</a> (public domain).</figcaption>
     </figure>
     <div class="section-head">
       <h2>How Hollywood History<br>Stopped the Subway</h2>
@@ -281,28 +294,36 @@
     <p class="policy-body" style="max-width: none;">This subway was planned to run down Wilshire to Fairfax, then north to the San Fernando Valley, but in March 1985 methane rising from the oil field beneath the Fairfax district exploded at a Ross Dress for Less near 3rd and Fairfax. The field had been drilled out by the 1930s and its wells capped, many of them poorly, and gas keeps seeping up through old bores and faults. The tar pits next door are proof the ground still vents on its own; pave it over and the gas has nowhere to go. It pooled in a sealed back room of the store until an employee punched a timecard in the next room, and the spark lit it off. Congressman Henry Waxman, whose district covered the area and whose constituents opposed the subway, used the blast to win a federal ban on tunneling through a Mid-Wilshire &ldquo;methane zone.&rdquo;</p>
     <p class="policy-body" style="max-width: none;">The line was rerouted north up Vermont Avenue instead, and the Wilshire branch stalled at Western for a generation, the tangled saga Elkind tells in <a href="https://www.ucpress.edu/book/9780520278271/railtown" target="_blank" rel="noopener"><em>Railtown</em></a>. Waxman finally championed lifting his own ban in 2007, once engineers showed the tunneling could be done safely. Construction began in 2014, and in May 2026 trains ran beneath Wilshire west of Western for the first time, the corridor mapped above.</p>
     <div class="media-row trio">
-      <figure class="shot"><img src="IMG_2616copy.jpg" alt="Vacancy notices taped inside a storefront window." loading="lazy" /><figcaption>I learned to keep my reflection out of the documentation.</figcaption></figure>
+      <figure class="shot"><img src="IMG_2616copy.jpeg" alt="Vacancy notices taped inside a storefront window." loading="lazy" /><figcaption>I learned to keep my reflection out of the documentation.</figcaption></figure>
       <p class="policy-body"><strong>Method:</strong> I rode my bike around the new stations, photographing every clear sign of underuse (a vacant lot, a for-lease or vacancy sign, blocked-off surface parking, an empty or shuttered building) and tagged each photo with GPS. It is a point-in-time street survey, not a legal or exhaustive parcel record, but every site can be checked against county assessor parcel numbers and zoning.</p>
       <figure class="shot"><img src="for_lease.png" alt="A for-lease sign on a building in the survey area." loading="lazy" /><figcaption>For lease signs are common in the &ldquo;Miracle&nbsp;Mile,&rdquo; which <a href="https://beverlypress.com/2026/04/l-a-council-oks-plan-for-miracle-mile-bid/" target="_blank" rel="noopener">a new business improvement district</a> hopes to revive.</figcaption></figure>
     </div>
-    <figure class="fig-right">
-      <img src="IMG_0363copy2.jpeg" alt="A fenced, empty lot topped with barbed wire where a house once stood." loading="lazy" />
-    </figure>
-    <h3 class="lot-head">Single-Family Home To Single Lot of Grass Pipeline</h3>
-    <p class="policy-body">The permit trail left behind tells a typical tale: small repairs (one permit was just to fix a sink), then a sale, then demolition, and then nothing. It has sat empty since, growing weeds and drawing neighbor complaints about dumped trash, which may be what put up the fence and the barbed wire. The pattern is common. An empty lot is cheap to hold: with no building to assess, the property tax on bare land runs lower than on the same lot with even a condemned house, so an owner can sit and wait for the right offer while the housing that could stand here never gets built. A new subway stop is exactly the kind of event that finally makes building pencil out.</p>
+    <div class="split">
+      <div class="split-text">
+        <h3 class="lot-head">Single-Family Home To Single Lot of Grass Pipeline</h3>
+        <p class="policy-body">The permit trail left behind tells a typical tale: small repairs (one permit was just to fix a sink), then a sale, then demolition, and then nothing. It has sat empty since, growing weeds and drawing neighbor complaints about dumped trash, which may be what put up the fence and the barbed wire. The pattern is common. An empty lot is cheap to hold: with no building to assess, the property tax on bare land runs lower than on the same lot with even a condemned house, so an owner can sit and wait for the right offer while the housing that could stand here never gets built. A new subway stop is exactly the kind of event that finally makes building pencil out.</p>
+      </div>
+      <figure class="split-fig wilton-fig">
+        <img src="IMG_0363copy2.jpeg" alt="A fenced, empty lot topped with barbed wire where a house once stood." loading="lazy" />
+      </figure>
+    </div>
   </div>
 </section>
 
 <section id="policy-section">
   <div class="wrap">
-    <figure class="fig-right fig-sm">
-      <img src="IMG_2131copy.jpg" alt="A construction crane over new building near the corridor." loading="lazy" />
-      <figcaption>New construction rising along the corridor.</figcaption>
-    </figure>
-    <div class="section-head">
-      <h2>More subway, more housing</h2>
+    <div class="split">
+      <div class="split-text">
+        <div class="section-head">
+          <h2>More subway, more housing</h2>
+        </div>
+        <p class="policy-body">Not all transit counts the same. Los Angeles has opened plenty of new rail since 2000, the Expo Line to Santa Monica, the K&nbsp;Line through Crenshaw, the Regional Connector downtown, but every mile of it was light rail. The D&nbsp;Line extension is the region&rsquo;s first new heavy-rail subway in that whole stretch, and the distinction pays off here: <a href="https://www.hcd.ca.gov/planning-and-research/sb79-tod" target="_blank" rel="noopener">SB&nbsp;79</a> (effective July 2026) saves its tallest allowances, buildings up to about nine stories, for stops on heavy rail and the highest-frequency transit. These Wilshire stations sit in that top tier.</p>
+      </div>
+      <figure class="split-fig crane-fig">
+        <img src="IMG_2131copy.jpg" alt="A construction crane over new building near the corridor." loading="lazy" />
+        <figcaption>New construction rising along the corridor.</figcaption>
+      </figure>
     </div>
-    <p class="policy-body">Not all transit counts the same. Los Angeles has opened plenty of new rail since 2000, the Expo Line to Santa Monica, the K&nbsp;Line through Crenshaw, the Regional Connector downtown, but every mile of it was light rail. The D&nbsp;Line extension is the region&rsquo;s first new heavy-rail subway in that whole stretch, and the distinction pays off here: <a href="https://www.hcd.ca.gov/planning-and-research/sb79-tod" target="_blank" rel="noopener">SB&nbsp;79</a> (effective July 2026) saves its tallest allowances, buildings up to about nine stories, for stops on heavy rail and the highest-frequency transit. These Wilshire stations sit in that top tier.</p>
     <div class="media-row land spaced">
       <figure class="shot"><img src="empty_lot.jpg" alt="A vacant, fenced lot along the corridor." loading="lazy" /><figcaption>A vacant lot within a short walk of a station.</figcaption></figure>
       <p class="policy-body">SB&nbsp;79 is not the only building incentive. The State Density Bonus Law trades extra size for affordable units, AB&nbsp;2097 scrapped parking minimums near transit, and Los Angeles layers its own <a href="https://planning.lacity.gov/plans-policies/transit-oriented-communities-incentive-program" target="_blank" rel="noopener">Transit Oriented Communities</a> program on top, all of it pushing housing towards empty parcels like these.</p>
@@ -531,10 +552,10 @@ SECTIONS.forEach(sec => {
   }));
 });
 
-// ---- layer toggle (top-right) ----
+// ---- layer toggle (top-left, clear of the B Line in the upper-right) ----
 L.control.layers(null, Object.assign({
   "Vacancy Survey Photos": photoLayer
-}, sectionOverlays), { collapsed: false }).addTo(map);
+}, sectionOverlays), { collapsed: false, position: "topleft" }).addTo(map);
 
 // (data table removed for now: it displayed the same placeholder sample parcels)
 </script>
