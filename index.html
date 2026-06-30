@@ -35,12 +35,24 @@
 
   body {
     margin: 0;
-    background: var(--paper);
+    background: #EDEBF1;
     color: var(--ink);
     font-family: 'Public Sans', system-ui, sans-serif;
     font-size: 17px;
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
+  }
+
+  /* subtle gray chain-link fence behind everything; drifts on scroll */
+  #fence-bg {
+    position: fixed;
+    inset: -10% 0;
+    z-index: -1;
+    pointer-events: none;
+    background-color: #EDEBF1;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='38' height='38'%3E%3Cpath d='M0 19 L19 0 L38 19 L19 38 Z' fill='none' stroke='%23D7D3DF' stroke-width='2' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    will-change: background-position;
   }
 
   .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
@@ -271,6 +283,8 @@
 </style>
 </head>
 <body>
+
+<div id="fence-bg" aria-hidden="true"></div>
 
 <header class="hero">
   <div class="wrap">
@@ -578,6 +592,17 @@ L.control.layers(null, legendOverlays, { collapsed: false, position: "topleft" }
 L.control.zoom({ position: "topleft" }).addTo(map);
 
 // (data table removed for now: it displayed the same placeholder sample parcels)
+
+// chain-link fence drifts slowly as you scroll (skipped if the user prefers reduced motion)
+(function () {
+  const fence = document.getElementById("fence-bg");
+  if (!fence || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  let ticking = false;
+  const update = () => { fence.style.backgroundPositionY = (window.scrollY * 0.35) + "px"; ticking = false; };
+  window.addEventListener("scroll", () => {
+    if (!ticking) { ticking = true; requestAnimationFrame(update); }
+  }, { passive: true });
+})();
 </script>
 </body>
 </html>
