@@ -274,6 +274,11 @@
     .corridor .halo { animation: none; }
     html { scroll-behavior: auto; }
   }
+  .pop-img { width: 100%; height: auto; display: block; }
+.pop-size { margin-top: 6px; padding: 4px 10px; border: 1px solid #ccc; border-radius: 4px;
+  background: #fff; cursor: pointer; font-size: .85em; }
+.leaflet-popup-close-button { font-size: 22px !important; width: 28px !important; height: 28px !important;
+  line-height: 26px !important; background: rgba(255,255,255,.9); border-radius: 50%; top: 4px !important; right: 4px !important; }
 </style>
 </head>
 <body>
@@ -438,25 +443,53 @@ const photoLayer  = L.layerGroup().addTo(map);
 // Photo popups never pan the map (autoPan is off below). If a marker sits too close
 // to the top for the popup to open upward without clipping, flip it downward instead,
 // so the view stays put.
-map.on("popupopen", function (e) {
-  var popup = e.popup;
-  function place() {
-    if (!popup._map) return;
-    var pt = map.latLngToContainerPoint(popup.getLatLng());
-    var h = popup._container ? popup._container.offsetHeight : 0;
-    var below = pt.y < (h + 28);            // not enough room above the marker
-    if (popup._container) popup._container.classList.toggle("popup-below", below);
-    popup.options.offset = below ? L.point(0, h + 14) : L.point(0, 7);
-    popup.update();
-  }
-  var img = popup._contentNode && popup._contentNode.querySelector("img.pop-img");
-  if (img && !img.complete) {
-    img.addEventListener("load", place, { once: true });
-    img.addEventListener("error", place, { once: true });
-  } else {
-    place();
-  }
-});
+    map.on("popupopen", function (e) {
+      var popup = e.popup;
+      var SMALL = { minWidth: 50, maxWidth: 260, maxHeight: 300 };
+      var big = false;
+
+      // photo popups (the ones with a size button) always open small
+      if (popup._contentNode && popup._contentNode.querySelector(".pop-size")) {
+        Object.assign(popup.options, SMALL);
+      }
+
+      // connect the Enlarge / Shrink button
+      function wireSize() {
+        var btn = popup._contentNode && popup._contentNode.querySelector(".pop-size");
+        if (!btn) return;
+        btn.textContent = big ? "⤡ Shrink" : "⤢ Enlarge";
+        btn.onclick = function (ev) {
+          ev.stopPropagation();
+          big = !big;
+          var w = Math.min(720, window.innerWidth - 60);
+          Object.assign(popup.options, big
+            ? { minWidth: w, maxWidth: w, maxHeight: window.innerHeight - 140 }
+            : SMALL);
+          popup.update();   // redraw at the new size
+          place();          // re-check room above vs. below the marker
+        };
+      }
+
+      function place() {
+        if (!popup._map) return;
+        var pt = map.latLngToContainerPoint(popup.getLatLng());
+        var h = popup._container ? popup._container.offsetHeight : 0;
+        var below = pt.y < (h + 28);           // not enough room above the marker
+        if (popup._container) popup._container.classList.toggle("popup-below", below);
+        popup.options.offset = below ? L.point(0, h + 14) : L.point(0, 7);
+        popup.update();
+        wireSize();         // the redraw replaces the button, so reconnect it
+      }
+
+      wireSize();
+      var img = popup._contentNode && popup._contentNode.querySelector("img.pop-img");
+      if (img && !img.complete) {
+        img.addEventListener("load", place, { once: true });
+        img.addEventListener("error", place, { once: true });
+      } else {
+        place();
+      }
+    });
 
 // station reference dots
 const stationStyle = {
@@ -495,8 +528,8 @@ fetch("photos.csv")
                   `<img class="pop-img" src="${src}" loading="lazy" alt="${c.t || name}" />
            <div class="pop-cap"><b>${c.t || name}</b></div>
            ${c.d ? `<div class="pop-cap">${c.d}</div>` : ""}
-           ${c.when ? `<div class="pop-cap" style="opacity:.6;font-size:.85em">${c.when}</div>` : ""}`,
-        { maxWidth: 260, maxHeight: 300, autoPan: false }
+                     ${c.when ? `<div class="pop-cap" style="opacity:.6;font-size:.85em">${c.when}</div>` : ""}
+          <button class="pop-size" type="button">⤢ Enlarge</button>`,
       ).addTo(photoLayer);
     });
     const cnt = document.getElementById("photo-count");
