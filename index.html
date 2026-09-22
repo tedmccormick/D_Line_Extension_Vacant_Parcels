@@ -359,7 +359,7 @@
       <a href="#map-section">Back to map &uarr;</a>
     </div>
     <p class="foot-note">Reporting, photography, and field survey by Ted&nbsp;McCormick. Built in Los Angeles, June 2026. Sources are linked throughout.</p>
-    <p class="foot-note" style="margin-top:8px;">&copy; 2026 Ted&nbsp;McCormick. Base map &copy; OpenStreetMap contributors, &copy; CARTO.</p>
+    <p class="foot-note" style="margin-top:8px;">&copy; 2026 Ted&nbsp;McCormick. Base map &copy; OpenStreetMap contributors.</p>
   </div>
 </footer>
 
@@ -412,9 +412,9 @@ const fmt = n => n.toLocaleString("en-US");
 
 // ---- map ----
 const map = L.map("map", { scrollWheelZoom: false, zoomControl: false }).setView([34.0625, -118.355], 12);
-L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
-  attribution: '&copy; OpenStreetMap &copy; CARTO', maxZoom: 19
-}).addTo(map);
+  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors', maxZoom: 19
+  }).addTo(map);
 map.on("click", () => map.scrollWheelZoom.enable());
 
 // dedicated pane so the dense photo swarm sits BENEATH parcels and stations
