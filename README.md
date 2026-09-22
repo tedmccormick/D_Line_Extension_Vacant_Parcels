@@ -2,11 +2,11 @@
 
 **[View the live map →](https://tedmccormick.github.io/D_Line_Extension_Vacant_Parcels/)**
 
-A "before" picture of the neighborhoods along the Los Angeles Metro D Line (Purple Line) subway extension, documented by bicycle before the new stations change them.
+A "before" picture of the neighborhoods along the Los Angeles Metro D Line (Purple Line) subway extension, documented by bicycle before the new stations opened on May 8th, 2026.
 
 What this is
 
-The D Line extension is bringing new subway stations west along Wilshire Boulevard. New transit tends to reshape the blocks around it, so this project records what those blocks look like now: empty lots, abandoned buildings, and underused properties, many marked with "For Rent," "For Lease," or "For Sale" signs on residential and commercial buildings.
+The D Line extension is bringing new subway stations west along Wilshire Boulevard and is currently planned to end at the Veterans Hospital just West of the 405 freeway. New transit gradually reshapes the blocks around it, so this project records what those blocks look like now: empty lots, abandoned buildings, and underused properties, many marked with "For Rent," "For Lease," or "For Sale" signs on residential and commercial buildings.
 
 The site presents the survey as an interactive map with a sortable data table. Each parcel appears in both.
 
