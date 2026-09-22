@@ -1,6 +1,6 @@
 D Line Extension Corridor Survey
 
-**[View the live map →]([https://[your-username].github.io/[repo-name]](https://tedmccormick.github.io/D_Line_Extension_Vacant_Parcels/)/)**
+**[View the live map →](https://tedmccormick.github.io/D_Line_Extension_Vacant_Parcels/)**
 
 A "before" picture of the neighborhoods along the Los Angeles Metro D Line (Purple Line) subway extension, documented by bicycle before the new stations change them.
 
