@@ -363,6 +363,7 @@
   </div>
 </footer>
 
+<script src="photo_captions.js"></script>
 <script>
 /* =========================================================================
    EDIT YOUR DATA HERE
@@ -486,12 +487,15 @@ fetch("photos.csv")
       if (!isFinite(lat) || !isFinite(lng) || !src) return;
       pts.push([lat, lng]);
       const name = src.split("/").pop();
+      const c = (typeof PHOTO_CAPTIONS !== "undefined" && PHOTO_CAPTIONS[name]) || {};
       L.circleMarker([lat, lng], {
         pane: "photos",
         radius: 4, color: "#0B8F6C", weight: 1, fillColor: "#15D6A2", fillOpacity: 0.9
       }).bindPopup(
-        `<img class="pop-img" src="${src}" loading="lazy" alt="${name}" />
-         <div class="pop-cap">${name}</div>`,
+                  `<img class="pop-img" src="${src}" loading="lazy" alt="${c.t || name}" />
+           <div class="pop-cap"><b>${c.t || name}</b></div>
+           ${c.d ? `<div class="pop-cap">${c.d}</div>` : ""}
+           ${c.when ? `<div class="pop-cap" style="opacity:.6;font-size:.85em">${c.when}</div>` : ""}`,
         { maxWidth: 260, maxHeight: 300, autoPan: false }
       ).addTo(photoLayer);
     });
