@@ -279,6 +279,8 @@
   background: #fff; cursor: pointer; font-size: .85em; }
 .leaflet-popup-close-button { font-size: 22px !important; width: 28px !important; height: 28px !important;
   line-height: 26px !important; background: rgba(255,255,255,.9); border-radius: 50%; top: 4px !important; right: 4px !important; }
+.leaflet-popup.popup-big .pop-img { width: auto; max-width: 100%; max-height: 340px; margin: 0 auto; object-fit: contain; }
+.pop-cap { word-break: normal; overflow-wrap: anywhere; }
 </style>
 </head>
 <body>
@@ -443,14 +445,16 @@ const photoLayer  = L.layerGroup().addTo(map);
 // Photo popups never pan the map (autoPan is off below). If a marker sits too close
 // to the top for the popup to open upward without clipping, flip it downward instead,
 // so the view stays put.
-    map.on("popupopen", function (e) {
+        map.on("popupopen", function (e) {
       var popup = e.popup;
-      var SMALL = { minWidth: 50, maxWidth: 260, maxHeight: 300 };
+      var isPhoto = !!(popup._contentNode && popup._contentNode.querySelector(".pop-size"));
+      var SMALL = { minWidth: 50, maxWidth: 260, maxHeight: 300, autoPan: false };
       var big = false;
 
-      // photo popups (the ones with a size button) always open small
-      if (popup._contentNode && popup._contentNode.querySelector(".pop-size")) {
+      // photo popups always open small
+      if (isPhoto) {
         Object.assign(popup.options, SMALL);
+        if (popup._container) popup._container.classList.remove("popup-big");
       }
 
       // connect the Enlarge / Shrink button
@@ -461,12 +465,14 @@ const photoLayer  = L.layerGroup().addTo(map);
         btn.onclick = function (ev) {
           ev.stopPropagation();
           big = !big;
-          var w = Math.min(720, window.innerWidth - 60);
+          var size = map.getSize();              // fit inside the map, not the window
+          var w = Math.min(720, size.x - 60);
           Object.assign(popup.options, big
-            ? { minWidth: w, maxWidth: w, maxHeight: window.innerHeight - 140 }
+            ? { minWidth: w, maxWidth: w, maxHeight: size.y - 90, autoPan: true, autoPanPadding: L.point(20, 20) }
             : SMALL);
-          popup.update();   // redraw at the new size
-          place();          // re-check room above vs. below the marker
+          if (popup._container) popup._container.classList.toggle("popup-big", big);
+          popup.update();
+          place();
         };
       }
 
@@ -474,7 +480,8 @@ const photoLayer  = L.layerGroup().addTo(map);
         if (!popup._map) return;
         var pt = map.latLngToContainerPoint(popup.getLatLng());
         var h = popup._container ? popup._container.offsetHeight : 0;
-        var below = pt.y < (h + 28);           // not enough room above the marker
+        // small popups flip downward near the top; enlarged ones open upward and nudge the map to fit
+        var below = !big && pt.y < (h + 28);
         if (popup._container) popup._container.classList.toggle("popup-below", below);
         popup.options.offset = below ? L.point(0, h + 14) : L.point(0, 7);
         popup.update();
@@ -529,7 +536,8 @@ fetch("photos.csv")
            <div class="pop-cap"><b>${c.t || name}</b></div>
            ${c.d ? `<div class="pop-cap">${c.d}</div>` : ""}
                      ${c.when ? `<div class="pop-cap" style="opacity:.6;font-size:.85em">${c.when}</div>` : ""}
-          <button class="pop-size" type="button">⤢ Enlarge</button>`,
+                    <button class="pop-size" type="button">⤢ Enlarge</button>`,
+        { maxWidth: 260, maxHeight: 300, autoPan: false }
       ).addTo(photoLayer);
     });
     const cnt = document.getElementById("photo-count");
